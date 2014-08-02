@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block content %}
+    <style type="text/css" media="print">
+        @page {
+            size: A4 landscape;
+            margin: 1cm;
+            padding: 0;
+        }
+
+        .request.result {
+            padding: 0;
+        }
+    </style>
+    <div class="request result">
+        <div class="right">Приложение 2</div>
+        <h2>Результаты</h2>
+
+        <h3>экспертизы результативности педагогической деятельности</h3>
+
+        <h3>педагогического работника, аттестуемого для установления уровня квалификации с
+            {% if request.qualification.for_confirmation %}
+                подтверждением
+            {% else %}
+                присвоением
+            {% endif %}
+        </h3>
+
+        <h3>{{ request.qualification.result_form }} квалификационной категории</h3>
+
+        <p>
+            Фамилия, имя, отчество: <span class="data">{{ request.fio }}</span>
+        </p>
+
+        <p>
+            Место работы: <span class="data">
+            {% if request.organization %}
+                {{ request.organization }}
+            {% else %}
+                {{ request.organization_name }}
+            {% endif %}
+            </span>,
+            {% if not request.organization %}
+                <span class="data">{{ request.territory }}</span>
+            {% endif %}
+        </p>
+        <table class="result">
+            <tr>
+                <th>Занимаемая должность</th>
+                <th>Представля&shy;емые материалы</th>
+                <th>Максимально возможный<br>итоговый балл</th>
+                <th>Нижнее пороговое значение</th>
+                <th>Оценка первого эксперта</th>
+                <th>Оценка второго эксперта</th>
+                {% if exp3 %}
+                    <th>Оценка третьего эксперта</th>
+                {% endif %}
+                {% if exp4 %}
+                    <th>Оценка четвертого эксперта</th>
+                {% endif %}
+
+                <th>Средний балл</th>
+                <th>Максимально возможный<br> итоговый балл по<br>представлен&shy;ным материалам</th>
+                <th>Нижнее пороговое<br> значение по представлен&shy;ным материалам</th>
+                <th>Итоговый результат</th>
+            </tr>
+            <tr>
+                <td rowspan="2">{{ request.post }}</td>
+                <td>первый этап</td>
+                <td>{{ config.first_stage_max_grade|default_if_none:"" }}</td>
+                <td>{{ config.first_stage_min_grade|default_if_none:"" }}</td>
+                <td>{{ exp1.first_grade|default_if_none:"" }}</td>
+                <td>{{ exp2.first_grade|default_if_none:"" }}</td>
+                {% if exp3 %}
+                    <td>{{ exp3.first_grade|default_if_none:"" }}</td>
+                {% endif %}
+                {% if exp4 %}
+                    <td>{{ exp4.first_grade|default_if_none:"" }}</td>
+                {% endif %}
+                <td>{{ first_avg_grade|floatformat }}</td>
+                <td rowspan="2">{{ max_grade|default_if_none:"" }}</td>
+                <td rowspan="2">{{ min_grade }}</td>
+                <td rowspan="2">{{ result|floatformat }}</td>
+            </tr>
+            <tr>
+                <td>второй этап</td>
+                <td>{{ config.second_stage_max_grade|default_if_none:"" }}</td>
+                <td>{{ config.second_stage_min_grade|default_if_none:"" }}</td>
+                <td>{{ exp1.second_grade|default_if_none:"" }}</td>
+                <td>{{ exp2.second_grade|default_if_none:"" }}</td>
+                {% if exp3 %}
+                    <td>{{ exp3.second_grade|default_if_none:"" }}</td>
+                {% endif %}
+                {% if exp4 %}
+                    <td>{{ exp4.second_grade|default_if_none:"" }}</td>
+                {% endif %}
+                <td>{{ second_avg_grade|floatformat }}</td>
+
+            </tr>
+        </table>
+        <p>Эксперты: {{ exp1.expert }}, {{ exp1.expert.post }}; {{ exp2.expert }}, {{ exp2.expert.post }};
+            {% if exp3 %}
+                {{ exp3.expert }}, {{ exp3.expert.post }};
+            {% endif %}
+            {% if exp4 %}
+                {{ exp4.expert }}, {{ exp4.expert.post }};
+            {% endif %}
+        </p>
+
+        <p>Главный специалист отдела профессионального образования, науки и аттестации педагогических кадров Управления непрерывного профессионального образования и науки Департамента образования и молодежной политики Ханты-Мансийского автономного округа &mdash; Югры _____________ Д.И.&nbsp;Худорожкова</p>
+
+        <p>{{ results_date }}</p>
+    </div>
+    <hr/>
+    <div>
+        <a id="print" href="#">
+            <img src="{{ STATIC_URL }}images/print.png" alt=""> {% trans "Print" %}
+        </a>
+    </div>
+{% endblock %}

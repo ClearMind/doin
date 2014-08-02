@@ -1,0 +1,462 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block content %}
+    <div class="form">
+    <form action="." method="POST" id="form">
+    {% csrf_token %}
+    {% if id %}
+        <input type="hidden" value="{{ id }}" name="id"/>
+    {% endif %}
+    <table>
+    {% if form.errors %}
+        <tr style="border-top: 1px solid gray;">
+            <td class="error" colspan="3">
+                {{ form.non_field_errors }}
+            </td>
+        </tr>
+    {% endif %}
+    <tr class="caption">
+        <td colspan="3">
+            {% if qid %}
+                Представление
+            {% else %}
+                Заявление
+            {% endif %}
+        </td>
+    </tr>
+    {% if form.qualification.errors %}
+        <tr>
+            <td colspan="3" class="error">{{ form.qualification.errors }}</td>
+        </tr>
+    {% endif %}
+    <tr>
+        <td class="label">{{ form.qualification.label_tag }}</td>
+        <td {% if form.qualification.field.required %}class="required"{% endif %}>{{ form.qualification }}</td>
+        <td class="help">Выберите из списка заявляемую категорию</td>
+    </tr>
+    {% if form.presence.errors %}
+        <tr>
+            <td colspan="3" class="error">{{ form.presence.errors }}</td>
+        </tr>
+    {% endif %}
+    <tr>
+        <td class="label">{{ form.presence.label_tag }}</td>
+        <td {% if form.presence.field.required %}class="required"{% endif %}>{{ form.presence }}</td>
+        <td class="help">Установите галочку, если хотите лично присутствовать на заседании АК</td>
+    </tr>
+    <tr class="caption">
+        <td colspan="3">{% trans "Requester data" %}</td>
+    </tr>
+    {% if form.last_name.errors %}
+        <tr>
+            <td colspan="3" class="error">{{ form.last_name.errors }}</td>
+        </tr>
+    {% endif %}
+    <tr>
+        <td class="label">{{ form.last_name.label_tag }}</td>
+        <td {% if form.last_name.field.required %}class="required"{% endif %}>{{ form.last_name }}</td>
+        <td class="help">Введите фамилию</td>
+    </tr>
+    {% if form.first_name.errors %}
+        <tr>
+            <td colspan="3" class="error">{{ form.first_name.errors }}</td>
+        </tr>
+    {% endif %}
+    <tr>
+        <td class="label">{{ form.first_name.label_tag }}</td>
+        <td {% if form.first_name.field.required %}class="required"{% endif %}>{{ form.first_name }}</td>
+        <td class="help">Введите имя</td>
+    </tr>
+    {% if form.middle_name.errors %}
+        <tr>
+            <td colspan="3" class="error">{{ form.middle_name.errors }}</td>
+        </tr>
+    {% endif %}
+    <tr>
+        <td class="label">{{ form.middle_name.label_tag }}</td>
+        <td {% if form.middle_name.field.required %}class="required"{% endif %}>{{ form.middle_name }}</td>
+        <td class="help">Введите отчество</td>
+    </tr>
+
+    {% if form.genitive.errors %}
+        <tr>
+            <td colspan="3" class="error">{{ form.genitive.errors }}</td>
+        </tr>
+    {% endif %}
+    <tr>
+        <td class="label">{{ form.genitive.label_tag }}</td>
+        <td {% if form.genitive.field.required %}class="required"{% endif %}>{{ form.genitive }}</td>
+        <td class="help">Введите фамилию, имя и отчество в родительном падеже полнстью (без сокращений)</td>
+    </tr>
+
+    {% if form.birth_date.errors %}
+        <tr>
+            <td colspan="3" class="error">{{ form.birth_date.errors }}</td>
+        </tr>
+    {% endif %}
+    <tr>
+        <td class="label">{{ form.birth_date.label_tag }}</td>
+        <td {% if form.birth_date.field.required %}class="required"{% endif %}>{{ form.birth_date }}</td>
+        <td class="help">Введите дату Вашего рождения в формате дд.мм.гггг, например 01.09.1969</td>
+    </tr>
+    {% if form.email.errors %}
+        <tr>
+            <td colspan="3" class="error">{{ form.email.errors }}</td>
+        </tr>
+    {% endif %}
+    <tr>
+        <td class="label">{{ form.email.label_tag }}</td>
+        <td {% if form.email.field.required %}class="required"{% endif %}>{{ form.email }}</td>
+        <td class="help">Введите адрес электронной почты (личный или образовательного учреждения)</td>
+    </tr>
+    {% if form.phone.errors %}
+        <tr>
+            <td colspan="3" class="error">{{ form.phone.errors }}</td>
+        </tr>
+    {% endif %}
+    <tr>
+        <td class="label">{{ form.phone.label_tag }}</td>
+        <td {% if form.phone.field.required %}class="required"{% endif %}>{{ form.phone }}</td>
+        <td class="help">Введите контактный номер телефона (не обязательное поле)</td>
+    </tr>
+    <tr class="caption">
+        <td colspan="3">{% trans "Job place" %}</td>
+    </tr>
+
+    <tr>
+        <td class="label">Выберите уровень подчинения вашего образовательного учреждения</td>
+        <td colspan="2" style="border-right: 1px solid gray;">
+            <input type="radio" value="0" name="group1" {% if not data.organization %}checked="1"{% endif %}/>
+            муниципальное образование<br/>
+            <input type="radio" value="1" name="group1" {% if data.organization %}checked="1"{% endif %} id="org"/>
+            подведомственная организация<br/>
+        </td>
+    </tr>
+
+    {% if form.territory.errors %}
+        <tr class="territory_field">
+            <td colspan="3" class="error">{{ form.territory.errors }}</td>
+        </tr>
+    {% endif %}
+    <tr class="territory_field">
+        <td class="label">{{ form.territory.label_tag }}</td>
+        <td class="required">{{ form.territory }}</td>
+        <td class="help">Выберите из списка муниципальное образование, в котором находится Ваше образовательное
+            учреждение
+        </td>
+    </tr>
+    {% if form.organization_name.errors %}
+        <tr class="territory_field">
+            <td colspan="3" class="error">{{ form.organization_name.errors }}</td>
+        </tr>
+    {% endif %}
+    <tr class="territory_field">
+        <td class="label">
+            {{ form.organization_name.label_tag }}<br>
+            <span class="help">Введите полное название Вашего образовательного учреждения (без сокращений)</span>
+        </td>
+        <td class="required" colspan="2">{{ form.organization_name }}</td>
+    </tr>
+
+    {% if form.organization.errors %}
+        <tr class="organization_field">
+            <td colspan="3" class="error">{{ form.organization.errors }}</td>
+        </tr>
+    {% endif %}
+    <tr class="organization_field">
+        <td class="label">{{ form.organization.label_tag }}</td>
+        <td class="required">{{ form.organization }}</td>
+        <td class="help">Выберите из списка подведомственную организацию</td>
+    </tr>
+
+    {% if form.post.errors %}
+        <tr>
+            <td colspan="3" class="error">{{ form.post.errors }}</td>
+        </tr>
+    {% endif %}
+    <tr>
+        <td class="label">{{ form.post.label_tag }}</td>
+        <td {% if form.post.field.required %}class="required"{% endif %}>{{ form.post }}</td>
+        <td class="help">Выберите из списка Вашу основную должность в образовательном учреждении</td>
+    </tr>
+
+    {% if form.discipline.errors %}
+        <tr>
+            <td colspan="3" class="error">{{ form.discipline.errors }}</td>
+        </tr>
+    {% endif %}
+    <tr>
+        <td class="label">{{ form.discipline.label_tag }}</td>
+        <td {% if form.discipline.field.required %}class="required"{% endif %}>{{ form.discipline }}</td>
+        <td class="help">Введите предметную область в родительном падеже с маленькой буквы.
+            Обязательно для должностей "учитель" и
+            "преподавтель". Например,
+            <strong style="color: red">математики.</strong>
+        </td>
+    </tr>
+
+    {% if form.post_date.errors %}
+        <tr>
+            <td colspan="3" class="error">{{ form.post_date.errors }}</td>
+        </tr>
+    {% endif %}
+    <tr>
+        <td class="label">{{ form.post_date.label_tag }}</td>
+        <td {% if form.post_date.field.required %}class="required"{% endif %}>{{ form.post_date }}</td>
+        <td class="help">Введите дату назначения на данную должность в формате дд.мм.гггг, например 01.09.1999</td>
+    </tr>
+    {% if form.with_qualification.errors %}
+        <tr>
+            <td colspan="3" class="error">{{ form.with_qualification.errors }}</td>
+        </tr>
+    {% endif %}
+    <tr>
+        <td class="label">{{ form.with_qualification.label_tag }}</td>
+        <td id="with_qualification" {% if form.with_qualification.field.required %}class="required"{% endif %}>
+            {{ form.with_qualification }}</td>
+        <td class="help">Выберите из списка категорию, которую имеете на момент подачи заявления</td>
+    </tr>
+    {% if form.expiration_date.errors %}
+        <tr>
+            <td colspan="3" class="error">{{ form.expiration_date.errors }}</td>
+        </tr>
+    {% endif %}
+    <tr>
+        <td class="label">{{ form.expiration_date.label_tag }}</td>
+        <td id="expiration_date"
+            {% if form.expiration_date.field.required %}class="required"{% endif %}>{{ form.expiration_date }}</td>
+        <td class="help">Введите дату окончания срока действия квалификационной категории (при ее наличии) в
+            формате дд.мм.гггг, например 31.12.2013
+        </td>
+    </tr>
+    {% if form.organization_experience.errors %}
+        <tr>
+            <td colspan="3" class="error">{{ form.organization_experience.errors }}</td>
+        </tr>
+    {% endif %}
+    <tr>
+        <td class="label">{{ form.organization_experience.label_tag }}</td>
+        <td {% if form.organization_experience.field.required %}class="required"{% endif %}>{{ form.organization_experience }}</td>
+        <td class="help">Введите стаж работы в образовательном учреждении (полных лет, только число)</td>
+    </tr>
+    {% if form.post_experience.errors %}
+        <tr>
+            <td colspan="3" class="error">{{ form.post_experience.errors }}</td>
+        </tr>
+    {% endif %}
+    <tr>
+        <td class="label">{{ form.post_experience.label_tag }}</td>
+        <td {% if form.post_experience.field.required %}class="required"{% endif %}>{{ form.post_experience }}</td>
+        <td class="help">Введите стаж работы в данной должности (полных лет, только число)</td>
+    </tr>
+    <tr class="caption">
+        <td colspan="3">{% trans "Education" %}</td>
+    </tr>
+
+    {#    education #}
+
+    {% if form.edu_institution.errors %}
+        <tr>
+            <td colspan="3" class="error">{{ form.edu_institution.errors }}</td>
+        </tr>
+    {% endif %}
+    <tr>
+        <td class="label">
+            {{ form.edu_institution.label_tag }}<br>
+            <span class="help">Введите полное название учебного заведения в котором получили образование по
+                специальности</span>
+        </td>
+        <td {% if form.edu_institution.field.required %}class="required"{% endif %} colspan="2">
+            {{ form.edu_institution }}
+            {% if edu1_id %}
+                <input type="hidden" name="edu1_id" value="{{ edu1_id }}">
+            {% endif %}
+        </td>
+    </tr>
+    {% if form.edu_speciality.errors %}
+        <tr>
+            <td colspan="3" class="error">{{ form.edu_speciality.errors }}</td>
+        </tr>
+    {% endif %}
+    <tr>
+        <td class="label">{{ form.edu_speciality.label_tag }}</td>
+        <td {% if form.edu_speciality.field.required %}class="required"{% endif %}>{{ form.edu_speciality }}</td>
+        <td class="help">Введите название специальности по которой обучались</td>
+    </tr>
+    {% if form.edu_qualification.errors %}
+        <tr>
+            <td colspan="3" class="error">{{ form.edu_qualification.errors }}</td>
+        </tr>
+    {% endif %}
+    <tr>
+        <td class="label">{{ form.edu_qualification.label_tag }}</td>
+        <td {% if form.edu_qualification.field.required %}class="required"{% endif %}>{{ form.edu_qualification }}</td>
+        <td class="help">Введите квалификацию по диплому</td>
+    </tr>
+    {% if form.edu_diploma_year.errors %}
+        <tr>
+            <td colspan="3" class="error">{{ form.edu_diploma_year.errors }}</td>
+        </tr>
+    {% endif %}
+    <tr>
+        <td class="label">{{ form.edu_diploma_year.label_tag }}</td>
+        <td {% if form.edu_diploma_year.field.required %}class="required"{% endif %}>{{ form.edu_diploma_year }}</td>
+        <td class="help">Введите год получения диплома об образовании (только число)</td>
+    </tr>
+
+
+    <tr>
+        <td colspan="3" style="border-right: 1px solid gray; border-left: 1px solid gray;">
+            <a href="#" id="add_second_education" data-hidden="1">{% trans "Add second education" %}</a>
+        </td>
+    </tr>
+    {% if form.edu_institution2.errors %}
+        <tr class="second">
+            <td colspan="3" class="error">{{ form.edu_institution2.errors }}</td>
+        </tr>
+    {% endif %}
+    <tr class="second">
+        <td class="label">{{ form.edu_institution2.label_tag }}<br>
+            <span class="help">Введите полное название учебного заведения в котором получали второе образование</span>
+        </td>
+        <td {% if form.edu_institution2.field.required %}class="required"{% endif %} colspan="2">
+            {{ form.edu_institution2 }}
+            {% if edu2_id %}
+                <input type="hidden" value="{{ edu2_id }}" name="edu2_id"/>
+            {% endif %}
+        </td>
+    </tr>
+
+    {% if form.edu_speciality2.errors %}
+        <tr class="second">
+            <td colspan="3" class="error">{{ form.edu_speciality2.errors }}</td>
+        </tr>
+    {% endif %}
+    <tr class="second">
+        <td class="label">{{ form.edu_speciality2.label_tag }}</td>
+        <td {% if form.edu_speciality2.field.required %}class="required"{% endif %}>{{ form.edu_speciality2 }}</td>
+        <td class="help">Введите название специальности второго образования</td>
+    </tr>
+    {% if form.edu_qualification2.errors %}
+        <tr class="second">
+            <td colspan="3" class="error">{{ form.edu_qualification2.errors }}</td>
+        </tr>
+    {% endif %}
+    <tr class="second">
+        <td class="label">{{ form.edu_qualification2.label_tag }}</td>
+        <td {% if form.edu_qualification2.field.required %}class="required"{% endif %}>{{ form.edu_qualification2 }}</td>
+        <td class="help">Введите квалификацию по диплому второго образования</td>
+    </tr>
+    {% if form.edu_diploma_year2.errors %}
+        <tr class="second">
+            <td colspan="3" class="error">{{ form.edu_diploma_year2.errors }}</td>
+        </tr>
+    {% endif %}
+    <tr class="second">
+        <td class="label">{{ form.edu_diploma_year2.label_tag }}</td>
+        <td {% if form.edu_diploma_year2.field.required %}class="required"{% endif %}>{{ form.edu_diploma_year2 }}</td>
+        <td class="help">Введите год получения диплома о втором образовании (только число)</td>
+    </tr>
+
+    {#    end education #}
+    {% if form.trainings.errors %}
+        <tr>
+            <td colspan="3" class="error">{{ form.trainings.errors }}</td>
+        </tr>
+    {% endif %}
+    <tr style="height: 100px;">
+        <td class="label">{{ form.trainings.label_tag }}<br>
+            <span class="help">Введите полное название, количество часов, год повышения квалификации
+                (не более двух курсов)</span>
+        </td>
+        <td {% if form.trainings.field.required %}class="required"{% endif %} colspan="2">
+            {{ form.trainings }}
+        </td>
+    </tr>
+
+    <tr class="caption">
+        <td colspan="3">{% trans "Additional data" %}</td>
+    </tr>
+    {% if form.degrees.errors %}
+        <tr>
+            <td colspan="3" class="error">{{ form.degrees.errors }}</td>
+        </tr>
+    {% endif %}
+    <tr>
+        <td class="label">{{ form.degrees.label_tag }}</td>
+        <td {% if form.degrees.field.required %}class="required"{% endif %}>{{ form.degrees }}</td>
+        <td class="help">Выберите присвоенные Вам учёные степени (можно несколько)</td>
+    </tr>
+    {% if form.academic_title.errors %}
+        <tr>
+            <td colspan="3" class="error">{{ form.academic_title.errors }}</td>
+        </tr>
+    {% endif %}
+    <tr>
+        <td class="label">{{ form.academic_title.label_tag }}</td>
+        <td {% if form.academic_title.field.required %}class="required"{% endif %}>{{ form.academic_title }}</td>
+        <td class="help">Выберите из списка имеющееся ученое звание</td>
+    </tr>
+
+    {% if form.achievements.errors %}
+        <tr>
+            <td colspan="3" class="error">{{ form.achievements.errors }}</td>
+        </tr>
+    {% endif %}
+    <tr>
+        <td class="label">{{ form.achievements.label_tag }}</td>
+        <td {% if form.achievements.field.required %}class="required"{% endif %}>{{ form.achievements }}</td>
+        <td class="help">Выберите полученные Вами награды и звания (можно несколько)</td>
+    </tr>
+
+    {% if form.experience.errors %}
+        <tr>
+            <td colspan="3" class="error">{{ form.experience.errors }}</td>
+        </tr>
+    {% endif %}
+    <tr>
+        <td class="label">{{ form.experience.label_tag }}</td>
+        <td {% if form.experience.field.required %}class="required"{% endif %}>{{ form.experience }}</td>
+        <td class="help">Введите общий трудовой стаж (полных лет, только число)</td>
+    </tr>
+    {% if form.ped_experience.errors %}
+        <tr>
+            <td colspan="3" class="error">{{ form.ped_experience.errors }}</td>
+        </tr>
+    {% endif %}
+    <tr>
+        <td class="label">{{ form.ped_experience.label_tag }}</td>
+        <td {% if form.ped_experience.field.required %}class="required"{% endif %}>{{ form.ped_experience }}</td>
+        <td class="help">Введите педагогический стаж (полных лет, только число)</td>
+    </tr>
+    {% if form.results.errors %}
+        <tr>
+            <td colspan="3" class="error">{{ form.results.errors }}</td>
+        </tr>
+    {% endif %}
+    <tr>
+        <td class="label"><label for="id_results">
+            {% if qid %}
+                Опишите основные достижения педагога
+            {% else %}
+                Опишите Ваши основные достижения
+            {% endif %}
+        </label><br>
+            <span class="help">Поле имеет ограничение в 1200 символов.
+                Укажите только наиболее значимые результаты.</span>
+        </td>
+        <td colspan="2" {% if form.results.field.required %}class="required"{% endif %}
+            style="border-right: 1px solid gray;">
+            {{ form.results }}
+        </td>
+    </tr>
+
+    <tr class="caption">
+        <td colspan="3">
+            <input type="submit" value="{% trans "Save" %}"/>
+        </td>
+    </tr>
+    </table>
+    </form>
+    </div>
+{% endblock %}

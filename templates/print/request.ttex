@@ -1,0 +1,6 @@
+\newcommand{% templatetag openbrace %}
+    \fiotpl
+{% templatetag closebrace %}
+{% templatetag openbrace %}
+    {{ fio }}
+{% templatetag closebrace %}

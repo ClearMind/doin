@@ -1,0 +1,308 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load empty %}
+{% load cache %}
+{% block content %}
+    <h1>{% trans "Request details" %}</h1>
+    <table class="vertical">
+        <tr>
+            <th>Номер заявления</th>
+            <td>{{ req.pk }}</td>
+        </tr>
+        <tr>
+            <th>Заявитель</th>
+            <td>{{ req.fio }}</td>
+        </tr>
+        <tr>
+            <th>Место работы</th>
+            <td>
+                {{ req.post }}
+                {% if req.discipline %}{{ req.discipline }}{% endif %}
+                {{ req.territory|not_empty:"," }}
+                {{ req.organization|not_empty:"," }}
+                {{ req.organization_name|not_empty:"" }}
+            </td>
+        </tr>
+        <tr>
+            <th>Заявляемая категория</th>
+            <td>{{ req.qualification }}</td>
+        </tr>
+        <tr>
+            <th>Текущий статус заявления</th>
+            <td><strong>{{ req.status }}</strong></td>
+        </tr>
+        <tr>
+            <th><a href="#" id="more">Еще...</a></th>
+            <td></td>
+        </tr>
+        <tr class="hidden">
+            <th>Все изменения статусов</th>
+            <td>{% for s in statuses %}
+                <emph>{{ s.date }}</emph>: {{ s.status }}<br>
+            {% endfor %}
+            </td>
+        </tr>
+        <tr class="hidden">
+            <th>Имеющаяся квалификационная категория</th>
+            <td>{{ req.with_qualification|default_if_none:"нет" }}
+                {% if req.expiration_date %}
+                    (до {{ req.expiration_date }})
+                {% endif %}
+            </td>
+        </tr>
+        <tr class="hidden">
+            <th>Контакты</th>
+            <td>{{ req.phone }}, <a href="mailto:{{ req.email }}">{{ req.email }}</a></td>
+        </tr>
+    </table>
+    <h1>Статус заявления</h1>
+    <div class="form">
+        <form action="{% url attestation.views.set_current_status req.pk %}" method="post">
+            {% csrf_token %}
+            <table>
+                <tr class="caption">
+                    <td colspan="2">Добавить следующий этап движения заявления</td>
+                </tr>
+                <tr>
+                    <td><label for="new_status">Выберете из списка новый стутус для добавления</label></td>
+                    <td>
+                        <select name="new_status" id="new_status">
+                            <option value="-1">Не добавлять</option>
+                            {% for s in all_statuses %}
+                                <option value="{{ s.pk }}">{{ s.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                </tr>
+                <tr class="caption">
+                    <td colspan="2">Изменить текущий статус заявления</td>
+                </tr>
+                <tr>
+                    <td><label for="set_status">Изменить текущий статус "{{ req.status }}" на </label></td>
+                    <td>
+                        <select name="set_status" id="set_status">
+                            <option value="-1">Не изменять</option>
+                            {% for s in all_statuses %}
+                                <option value="{{ s.pk }}">{{ s.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                </tr>
+                <tr class="caption">
+                    <td colspan="2">
+                        <input type="submit" value="Сохранить изменения статуса">
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+    <h1>Эксперты</h1>
+    <div class="form">
+        <form action="{% url attestation.views.assign_experts req.pk %}" method="post">
+            {% csrf_token %}
+            <table>
+                <tr class="caption">
+                    <td>Выберите одного или нескольких экспертов для экспертызы данного заявления</td>
+                </tr>
+                <tr>
+                    <td>
+                        <table class="data">
+                            <thead>
+                            <tr>
+                                <th></th>
+                                <th>Ф.И.О.</th>
+                                <th>Должность</th>
+                                <th>Организация</th>
+                                <th>Муниципальное образование</th>
+                                <th>Обр. область</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% cache 600 experts %}
+                                {% for expert in all_experts %}
+                                    <tr>
+                                        <td>
+                                            <input type="checkbox" name="experts" value="{{ expert.pk }}">
+                                        </td>
+                                        <td>{{ expert }}</td>
+                                        <td>{{ expert.post }}</td>
+                                        <td>{{ expert.organization }}</td>
+                                        <td>{{ expert.territory }}</td>
+                                        <td>{{ expert.area }}</td>
+                                    </tr>
+                                {% endfor %}
+                            {% endcache %}
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                <tr class="caption">
+                    <td><input type="submit" value="Назначить экспертов"/></td>
+                </tr>
+            </table>
+        </form>
+    </div>
+    <div>
+        {% if not eir %}
+            <p class="message">
+                {% trans "No experts assigned for this request." %}
+            </p>
+        {% else %}
+            <table class="data_">
+                <tr>
+                    <th>Эксперт</th>
+                    <th>Отметка первого этапа</th>
+                    <th>Отметка второго этапа</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+                {% for e in eir %}
+                    <tr>
+                        <td title="{{ e.expert.organization }}, {{ e.expert.post }}">
+                            {{ e.expert }}, {{ e.expert.area }}
+                        </td>
+                        <td class="grade">
+                            <input type="text" data-id="{{ e.pk }}" value="{{ e.first_grade|default:"-" }}"
+                                   data-stage="1"
+                                   maxlength="5" size="5"/>
+                        </td>
+                        <td class="grade">
+                            <input type="text" data-id="{{ e.pk }}" value="{{ e.second_grade|default:"-" }}"
+                                   data-stage="2"
+                                   maxlength="5" size="5"/>
+                        </td>
+                        <td>
+                            <a href="{% url attestation.views.expert_blank req.secret_code e.pk %}" class="action">
+                                Бланк
+                            </a>
+                        </td>
+                        <td>
+                            <a class="action" href="{% url attestation.views.drop_expert req.pk e.pk %}">
+                                {% trans "Delete" %}
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+
+            </table>
+            <span id="changes">Все данные сохранены.</span>
+            <a href="{% url attestation.views.save_grades %}" class="action" id="save-grades">
+                {% trans "Save" %}</a>
+            <img class="spinner" src="{{ STATIC_URL }}images/ajax-loader.gif" alt="{% trans "Loading..." %}"/>
+        {% endif %}
+    </div>
+    <hr/>
+    <div>
+        <a href="{% url attestation.views.expert_results req.pk %}">{% trans "Expertise results" %}</a>
+    </div>
+    <h1>{% trans "Attestation" %}</h1>
+    <div class="form">
+        <form action="." method="post">
+            {% csrf_token %}
+            <table>
+                <tr class="caption">
+                    <td colspan="3">{% trans "Attestation data" %}</td>
+                </tr>
+                <tr>
+                    <td class="label">
+                        <label for="attestation_date">Дата заседания аттестационной комиссии</label>
+                    </td>
+                    <td>
+                        <input type="text" id="attestation_date" name="attestation_date"
+                               value="{{ req.attestation_date|date:"d.m.Y"|default_if_none:"" }}"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="label"><label for="order_date">Дата приказа</label></td>
+                    <td>
+                        <input type="text" id="order_date" name="order_date"
+                               value="{{ req.order_date|date:"d.m.Y"|default_if_none:"" }}"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="label"><label for="order_number">Номер приказа</label></td>
+                    <td>
+                        <input type="text" id="order_number" name="order_number"
+                               value="{{ req.order_number|default_if_none:"" }}"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="label"><label for="recomendations">{% trans "Recomendations of AC" %}</label></td>
+                    <td><textarea name="recomendations" id="recomendations" cols="40"
+                                  rows="3">{{ req.recomendations|default_if_none:"" }}</textarea></td>
+                </tr>
+                <tr>
+                    <td class="label"><label for="decision">{% trans "Decision of AC" %}</label></td>
+                    <td><textarea name="decision" id="decision" cols="40"
+                                  rows="3">{{ req.decision|default_if_none:"" }}</textarea></td>
+                </tr>
+                <tr>
+                    <td class="label"><label for="number">{% trans "Number of members of AC" %}</label></td>
+                    <td><input type="text" name="number" id="number"
+                               value="{{ req.number_of_members|default_if_none:"0" }}"/></td>
+                </tr>
+                <tr>
+                    <td class="label"><label for="notes">{% trans "Notes" %}</label></td>
+                    <td><textarea name="notes" id="notes" cols="40"
+                                  rows="3">{{ req.notes|default_if_none:"" }}</textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="label"><label for="agree">Голосов за</label></td>
+                    <td><input type="text" value="{{ req.agree|default_if_none:"0" }}" name="agree" id="agree"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="label"><label for="disagree">Голосов против</label></td>
+                    <td><input type="text" value="{{ req.disagree|default_if_none:"0" }}" name="disagree"
+                               id="disagree"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="label"><label for="retrain">Воздержались</label></td>
+                    <td><input type="text" value="{{ req.retrain|default_if_none:"0" }}" name="retraint" id="retrain"/>
+                    </td>
+                </tr>
+                <tr class="caption">
+                    <td colspan="3">
+                        <input type="submit" value="Сохранить данные по аттестации">
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+    <hr>
+    <div>
+        <a href="{% url attestation.views.sheet req.pk %}">Аттестационный лист</a>
+    </div>
+
+    <h1>Комментарии</h1>
+    {% if req.comment_set.all %}
+        <ol>
+            {% for c in req.comment_set.all %}
+                <li title="{{ c.time }}">{{ c.comment }}</li>
+            {% endfor %}
+
+        </ol>
+    {% endif %}
+    <div class="form">
+        <form action="{% url attestation.views.add_comment req.pk %}" method="post">
+            {% csrf_token %}
+            <table>
+                <tr class="caption">
+                    <td colspan="2">Комментарии</td>
+                </tr>
+                <tr>
+                    <td><label for="comment">Введите текст комментария:</label></td>
+                    <td><textarea name="comment" id="comment" cols="50" rows="10"></textarea></td>
+                </tr>
+                <tr class="caption">
+                    <td colspan="2"><input type="submit" value="Отправить комментарий"></td>
+                </tr>
+            </table>
+
+
+        </form>
+    </div>
+
+{% endblock %}

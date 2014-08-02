@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block content %}
+
+    <div class="request">
+        <h2>Экспертный лист</h2>
+
+        <h3>оценивания защиты педагогического проекта</h3>
+
+        <div class="cm"></div>
+        <p>Ф.И.О. аттестуемого: <span class="data">{{ req.fio }}</span></p>
+
+        <p style="font-weight: bold;">Уважаемый эксперт!</p>
+
+        <p>
+            Оцените в баллах (от 1 до 10) степень выраженности показателей по предложенным критериям. Колличество всех
+            баллов суммируется. Максимальный балл &mdash; {{ max }} баллов.
+        </p>
+        <table class="portrait">
+            <thead>
+            <th>№ п/п</th>
+            <th>Критерий</th>
+            <th>Показатели</th>
+            <th>Балл</th>
+            </thead>
+            <tbody>
+            {% for c in criteria %}
+                {% for i in c.indicator_set.all %}
+                    <tr>
+                        {% if forloop.first %}
+                            <td rowspan="{{ c.indicator_set.count }}">{{ forloop.parentloop.counter }}</td>
+                            <td rowspan="{{ c.indicator_set.count }}">{{ c.text }}</td>
+                        {% endif %}
+                        <td>{{ i.text }}</td>
+                        <td></td>
+                    </tr>
+                {% endfor %}
+            {% endfor %}
+            <tr>
+                <td></td>
+                <td colspan="2"><strong>Сумма баллов</strong></td>
+                <td></td>
+            </tr>
+            </tbody>
+        </table>
+        <div class="cm"></div>
+        <p class="right" id="expert-name">{{ eir.expert }} ____________</p>
+
+        <p class="right">Дата: ___/___/_____</p>
+    </div>
+    <hr/>
+    <div>
+        <a id="print" href="#">
+            <img src="{{ STATIC_URL }}images/print.png" alt=""> {% trans "Print" %}
+        </a>
+    </div>
+{% endblock %}

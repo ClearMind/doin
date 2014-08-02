@@ -1,0 +1,49 @@
+{% extends "reports/base.html" %}
+{% block content %}
+    <h1>Сводная ведомость по заявляемым категориям</h1>
+
+    {% for c in categories %}
+        {% if c.count or r.all_time_count %}
+            <h2>{{ c.name }}</h2>
+            <table>
+                <tr>
+                    <th>Заявлений в работе</th>
+                    <td>{{ c.count }}</td>
+                </tr>
+            </table>
+            <table>
+                <thead>
+                <tr>
+                    <th>Муниципальное образование</th>
+                    <th>ФИО</th>
+                    <th>Должность</th>
+                    <th>Организация</th>
+                    <th>Имеющаяся категория</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for ter, reqs in c.requests.items %}
+                    {% for r in reqs %}
+                        <tr>
+                            {% if forloop.first %}
+                                <td rowspan="{{ reqs|length }}">{{ ter }}</td>
+                            {% endif %}
+                            <td>{{ r.fio }}</td>
+                            <td>{{ r.post }}</td>
+                            <td>{{ r.organization.name }}{{ r.organization_name }}</td>
+                            <td>
+                                {% if r.with_qualification %}
+                                    {{ r.with_qualification.name }}<br>до&nbsp;{{ r.expiration_date|date:"d.m.Y" }}
+                                {% else %}
+                                    Нет
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    {% endfor %}
+
+{% endblock %}

@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+    <h1>Отчеты по заявлениям</h1>
+    <ol>
+        {% for l in list_ %}
+            <li><a href="{{ l.1 }}">{{ l.0 }}</a></li>
+        {% endfor %}
+
+    </ol>
+{% endblock %}

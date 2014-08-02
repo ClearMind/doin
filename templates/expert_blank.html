@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block content %}
+    <p class="message noprint">
+        Доступ к данной странице открыт для всех по следующей ссылке:<br>
+        <a href="{% url attestation.views.expert_blank req.secret_code eir.pk %}">
+            http://att.doinhmao.ru{% url attestation.views.expert_blank req.secret_code eir.pk %}
+        </a><br>
+        Вы можете скопировать данную ссылку и отправить эксперту по электронной почте (чтобы эксперт сам распечатал
+        бланк) или напечатать данную страницу для отправки в бумажном виде.
+    </p>
+    <div class="request result">
+        <div class="right">Приложение 2</div>
+        <h2>Результаты</h2>
+
+        <h3>экспертизы результативности педагогической деятельности</h3>
+
+        <h3>педагогического работника, аттестуемого для установления уровня квалификации с
+            {% if req.qualification.for_confirmation %}
+                подтверждением
+            {% else %}
+                присвоением
+            {% endif %}
+        </h3>
+        <table class="align-right">
+            <tr>
+                <td>{{ req.qualification.result_form }}</td>
+                <td style="border: 0;">квалификационной категории</td>
+            </tr>
+        </table>
+
+        <p style="margin-top: 1cm !important;">
+            Фамилия, имя, отчество: <span class="data">{{ req.fio }}</span>
+        </p>
+
+        <p>
+            Место работы: <span class="data">
+            {% if req.organization %}
+                {{ req.organization }}
+            {% else %}
+                {{ req.organization_name }}
+            {% endif %}
+            </span>
+        </p>
+        {% if not req.organization %}
+            <p>
+                Муниципальное образование: <span class="data">
+            {{ req.territory }}
+            </span>
+            </p>
+        {% endif %}
+        <table class="result">
+            <tr class="header">
+                <th>Занимаемая должность</th>
+                <th>Представля&shy;емые материалы</th>
+                <th>Максимально возможный итоговый балл</th>
+                <th>Нижнее пороговое значение</th>
+                <th>Оценка эксперта</th>
+            </tr>
+            <tr>
+                <td rowspan="2">{{ req.post }}</td>
+                <td>первый этап</td>
+                <td>{{ config.first_stage_max_grade }}</td>
+                <td>{{ config.first_stage_min_grade }}</td>
+                <td>
+                    <br><br><br>
+                </td>
+            </tr>
+            <tr>
+                <td>второй этап</td>
+                <td>{{ config.second_stage_max_grade }}</td>
+                <td>{{ config.second_stage_min_grade }}</td>
+                <td>
+                    <br><br><br>
+                </td>
+            </tr>
+        </table>
+        <table class="align-right" style="margin-top: 1cm;">
+            <tr>
+                <td style="border: 0">Эксперт:</td>
+                <td style="width: 2cm; border-bottom: 1px solid black"></td>
+                <td style="border: 0">{{ eir.expert }}, {{ eir.expert.post }}</td>
+            </tr>
+        </table>
+    </div>
+    <hr/>
+    <div>
+        <a id="print" href="#">
+            <img src="{{ STATIC_URL }}images/print.png" alt=""> {% trans "Print" %}
+        </a>
+    </div>
+{% endblock %}

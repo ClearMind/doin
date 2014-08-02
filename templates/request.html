@@ -1,0 +1,290 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load years %}
+{% block content %}
+    {% if not r.requestflow_set.all %}
+        <p class="message noprint">Ваше заявление сохранено. Проверьте правильность введенных данных и нажмите кнопку
+            "Зарегистрировать" внизу страницы.</p>
+    {% else %}
+        <h2 class="noprint">Движение заявления</h2>
+        <ol class="noprint">
+            {% for flow in r.requestflow_set.all %}
+                <li>{{ flow.status }} {{ flow.date }}</li>
+            {% endfor %}
+        </ol>
+    {% endif %}
+
+    <div class="request">
+
+    <table class="align-right">
+        <tr>
+            <td class="half">
+                <div class="regnum">№ {{ r.pk }}</div>
+            </td>
+            <td>Председателю Аттестационной комиссии</td>
+        </tr>
+        <tr>
+            <td class="half"></td>
+            <td>департамента образования и молодежной политики ХМАО - Югры</td>
+        </tr>
+        <tr>
+            <td class="half"></td>
+            <td>{{ commission.chairman.request_form }}</td>
+        </tr>
+        {% if not r.qualification.for_confirmation %}
+            <tr>
+                <td class="half"></td>
+                <td>{{ r.genitive }}
+
+                </td>
+            </tr>
+            <tr>
+                <td class="half"></td>
+                <td>{{ r.post.genitive }}
+                    {% if r.discipline %}
+                        {{ r.discipline }}
+                    {% endif %}
+                </td>
+            </tr>
+            {% if r.territory %}
+                <tr>
+                    <td class="half"></td>
+                    <td>{{ r.organization_name }}</td>
+                </tr>
+                <tr>
+                    <td class="half"></td>
+                    <td>{{ r.territory }}</td>
+                </tr>
+            {% endif %}
+            {% if r.organization %}
+                <tr>
+                    <td class="half"></td>
+                    <td>{{ r.organization.name }}</td>
+                </tr>
+            {% endif %}
+        {% endif %}
+    </table>
+    {#    Request  #}
+    {% if not r.qualification.for_confirmation %}
+        <h2>Заявление</h2>
+        <p>
+            Прошу аттестовать меня в {{ year }} году на <span class="data">{{ r.qualification.request_form }}</span>
+            {% if not r.qualification.for_confirmation %}
+                квалификационную категорию
+            {% endif %}
+            по должности <span class="data">{{ r.post }}</span>.
+        </p>
+        {% if r.with_qualification %}
+            <p>
+                В настоящее время имею <span class="data">{{ r.with_qualification.request_form }}</span>
+                квалификационную категорию, срок ее
+                действия до <span class="data">{{ r.expiration_date }}</span>
+            </p>
+        {% else %}
+            <p>
+                Квалификационной категории <span class="data">не имею</span>.
+            </p>
+        {% endif %}
+        <p>
+            Основанием для аттестации на указанную в заявлении квалификационную категорию считаю следующие
+            результаты
+            работы, соответствующие требованиям, предъявляемым к квалификационной категории:<br/>
+            <span class="data results">{{ r.results }}</span>
+        </p>
+        Сообщаю о себе следующие сведения:
+
+
+        <p>
+            Образование:
+        </p>
+        <ul class="list">
+            {% for e in edu %}
+                <li>
+                    <span class="data">{{ e.institution }}, {{ e.diploma_year }} г., специальность "{{ e.speciality }}",
+                        квалификация "{{ e.qualification }}"</span>.
+                </li>
+            {% endfor %}
+        </ul>
+        <p>Cтаж педагогической работы (по специальности) {{ r.pedagogical_experience }}
+            {{ r.pedagogical_experience|years_ru }};
+            в данной должности {{ r.post_experience }} {{ r.post_experience|years_ru }}; в данном учреждении
+            {{ r.organization_experience }} {{ r.organization_experience|years_ru }};
+            общий стаж {{ r.experience }} {{ r.experience|years_ru }}.
+        </p>
+
+        <p>
+            Имею следующие награды, звания, ученую степень, ученое звание:
+            <span class="data">
+                {% for a in r.achievements.all %}
+                    {{ a }}{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+                {% if r.achievements.all and r.degrees.all %}, {% endif %}
+                {% for d in r.degrees.all %}
+                    {{ d }}{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+                {% if r.degrees.all and r.academic_title %}, {% endif %}
+                {% if r.academic_title %}
+                    {{ r.academic_title }}
+                {% endif %}
+                {% if not r.degrees.all and not r.academic_title and not r.achievements.all %}
+                    Не имею
+                {% endif %}
+                ;
+            </span>
+        </p>
+
+        <p>
+            Сведения о повышении квалификации: <br/>
+        </p>
+        {% if r.trainings %}
+            <div class="list"><span class="data">{{ r.trainings }}</span>.</div>
+        {% else %}
+            <span class="data">Не проходил</span>
+        {% endif %}
+        {% if r.presence %}
+            <p>Аттестацию на заседании аттестационной комиссии прошу провести <span
+                    class="data">в моем присутствии</span>.</p>
+        {% else %}
+            <p>Аттестацию на заседании аттестационной комиссии прошу провести <span
+                    class="data">без моего присутствия</span>.</p>
+        {% endif %}
+        <p>С порядком аттестации педагогических работников государственных и муниципальных образовательных
+            учреждений
+            ознакомлен(а).</p>
+        {% if r.phone %}
+            <p>Телефон: <span class="data">{{ r.phone }}</span></p>
+        {% endif %}
+        {% if r.email %}
+            <p>Email: <span class="data"><a href="mailto:{{ r.email }}">{{ r.email }}</a></span></p>
+        {% endif %}
+        <p class="right">
+            {{ r.fio }} _______________
+        </p>
+    {% else %} {# Presentation #}
+        <h2>Представление</h2>
+        <h3 style="margin-bottom: 0.5cm;">к аттестации на соответствие занимаемой должности</h3>
+        <p>
+            1. Фамилия, имя, отчество: <span class="data">{{ r.fio }}</span>
+        </p>
+        <p>
+            2. Год, число, месяц рождения: <span class="data">{{ r.birth_date }}</span>
+        </p>
+        <p>
+            3. Занимаемая должность и дата назначения на эту должность: <span class="data">{{ r.post }} {{ r.discipline }},
+            {{ r.post_date }}</span>
+        </p>
+        <p>
+            4. Сведения о професиональном образовании образовании, наличии ученой степени, ученого звания:
+        </p>
+        <ul>
+            {% for e in edu %}
+                <li>
+                        <span class="data">{{ e.institution }}, {{ e.diploma_year }} г., специальность "{{ e.speciality }}",
+                        квалификация "{{ e.qualification }}"</span>;
+                </li>
+            {% endfor %}
+            {% if r.degrees.all %}
+                {% for d in r.degrees.all %}
+                    <li>
+                        <span class="data">d</span>;
+                    </li>
+                {% endfor %}
+            {% endif %}
+            {% if r.academic_title %}
+                <li>
+                    <span class="data">{{ r.academic_title }}</span>;
+                </li>
+            {% endif %}
+        </ul>
+
+        <p>
+            5. Сведения о повышении квалификации за последние 5 лет до прохождении аттестации: <br/>
+            {% if r.trainings %}
+                <span class="data list">{{ r.trainings }}</span>.
+            {% else %}
+                <span class="data">Не проходил</span>
+            {% endif %}
+        </p>
+        <p>6. Cтаж педагогической работы (по специальности) {{ r.pedagogical_experience }}
+            {{ r.pedagogical_experience|years_ru }};
+            в данной должности {{ r.post_experience }} {{ r.post_experience|years_ru }}; в данном учреждении
+            {{ r.organization_experience }} {{ r.organization_experience|years_ru }};
+            общий стаж {{ r.experience }} {{ r.experience|years_ru }}.
+        </p>
+
+        <p>
+            7. Государственные и отраслевые награды:
+        </p>
+
+        <ul>
+            {% for a in r.achievements.all %}
+                <li><span class="data">{{ a }}</span></li>
+            {% empty %}
+                <span class="data">не имеет</span>
+            {% endfor %}
+        </ul>
+
+        <p>8. Результаты профессиональной деятельности работника: <span class="data">{{ r.results }}</span></p>
+        <p style="padding-top: 0.5cm;">
+            С порядком аттестации педагогических работников государственных и муниципальных образовательных
+            организаций ознакомлен(а). Биографические данные, данные о трудовой деятельности, учёбе работника
+            соответствуют документам, удостоверяющим личность, записям в трудовой книжке, документам об образовании.
+        </p>
+        {% if r.phone %}
+            <p>Телефон: <span class="data">{{ r.phone }}</span></p>
+        {% endif %}
+        {% if r.email %}
+            <p>Email: <span class="data"><a href="mailto:{{ r.email }}">{{ r.email }}</a></span></p>
+        {% endif %}
+        <table>
+            <tr>
+                <td style="text-align: center;">{{ d|date:"d.m.Y" }}&nbsp;г.</td>
+                <td>{{ r.organization.name }}{{ r.organization_name }}<br>
+                    Директор учреждения
+                    _______________/_____________________/
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align: center;">МП</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Председатель Профсоюзного комитета</td>
+                <td>_______________/_____________________/</td>
+            </tr>
+            <tr>
+                <td>С&nbsp;представлением ознакомлен(а)</td>
+                <td>_______________ {{ r.fio }}</td>
+            </tr>
+        </table>
+    {% endif %}
+    </div>
+    <hr/>
+    <div>
+        <a id="print" href="#">
+            <img src="{{ STATIC_URL }}images/print.png" alt=""> {% trans "Print" %}
+        </a>
+    </div>
+    {% if not r.requestflow_set.all %}
+        <div class="form noprint">
+            <div class="message bad">
+                Если вы обнаружили ошибку или решили дополнить информацию, нажмите на ссылку
+                <a href="{% url attestation.views.request_form %}?id={{ r.pk }}">"Вернуться и изменить данные"</a>.
+            </div>
+
+            <form action="." method="post" style="margin-top: 4pt;">
+                {% csrf_token %}
+                <div class="message bad">Если данные в заявлении не содержат ошибок, нажмите кнопку "Зерегистрировать".
+                    Нажимая кнопку "Зарегистрировать", Вы соглашаетесь с тем, что данные,
+                    представленные в
+                    заявлении, верные и что Вы
+                    ознакомлены с порядком аттестации педагогических работников государственных и муниципальных
+                    образовательных организаций.
+                </div>
+                <br/>
+                <input type="hidden" value="{{ r.pk }}" id="request"/>
+                <input type="submit" value="{% trans "Register" %}"/>
+            </form>
+        </div>
+    {% endif %}
+{% endblock %}

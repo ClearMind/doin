@@ -1,0 +1,21 @@
+{% load i18n %}
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>Статус вашего заявления изменился.</title>
+</head>
+<body>
+<h1>Статус вашего заявления изменился</h1>
+
+<p>{{ rf.date }} статус вашего заявления изменился на "{{ rf.status.name }}"</p>
+
+<p>
+    Детали вашего заяления доступны по данной
+    <a href="http://att.doinhmao.ru{% url attestation.views.request rf.request.secret_code %}">
+        ссылке.
+    </a>
+</p>
+
+</body>
+</html>

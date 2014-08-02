@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block content %}
+    <h1>Заявления</h1>
+    <p class="message">
+        В таблицах представлены заявления которые зарегистрированы в системе.
+    </p>
+    {% for status, requests in reqs.items %}
+        <h1>Группа "{{ status }}"<br>всего: {{ requests|length }}</h1>
+        <table class="data">
+            <thead>
+            <tr>
+                <th>№</th>
+                <th>ФИО заявителя</th>
+                <th>Должность</th>
+                <th>Заявляемая категория</th>
+                <th>Имеющаяся категория</th>
+                <th>Организация</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for r in requests %}
+                <tr>
+                    <td><a class="block" href="{% url attestation.views.request_details r.pk %}">{{ r.pk }}</a></td>
+                    <td>
+                        <a href="{% url attestation.views.request_by_id r.pk %}">{{ r.fio }}</a><br>
+                        <a class="action" href="{% url attestation.views.request_form %}?id={{ r.pk }}">Изменить</a>
+                    </td>
+                    <td>{{ r.post }} {{ r.discipline|default_if_none:"" }}</td>
+                    <td>
+                        {{ r.qualification }}
+                    </td>
+                    <td>
+                        {% if r.with_qualification %}
+                            {{ r.with_qualification }}<br>(до&nbsp;{{ r.expiration_date|date:"d.m.Y" }})
+                        {% else %}
+                            Без категории
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if r.territory %}
+                            {{ r.organization_name }}, <strong>{{ r.territory }}</strong>
+                        {% else %}
+                            {{ r.organization }}
+                        {% endif %}
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="9">Заявлений нет</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <br>
+        <hr>
+    {% endfor %}
+    {% if periods %}
+        <div>
+            <h2>Другие периоды</h2>
+            <ul>
+                {% for p in periods %}
+                <li><a href="{% url attestation.views.completed_requests p %}">{{ p }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+{% endblock %}

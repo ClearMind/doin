@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% block content %}
+    <h1>Протокол заседания АК, приказ</h1>
+    {% if generator_error %}
+        <p class="message">{{ generator_error }} {{ file.errors }}</p>
+    {% endif %}
+    {% if commission_not_configured %}
+        <p class="message">Нет действующих аттестационных комиссий!</p>
+    {% endif %}
+    <div class="form">
+        <form action="." method="post">
+            {% csrf_token %}
+            <table>
+                <tr class="caption">
+                    <td colspan="2">Данные по членам аттестационной комиссии</td>
+                </tr>
+                <tr>
+                    <td>Укажите отсутствующих членов на заседании АК</td>
+                    <td>
+                        <select class="chosen" name="unpresent" id="unpresent" multiple="multiple">
+                            {% for m in members %}
+                                <option value="{{ m.pk }}" {% if m in upresent_members %}
+                                        selected="selected"
+                                {% endif %} >{{ m }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                </tr>
+                <tr class="caption">
+                    <td colspan="2">Данные по заявителям</td>
+                </tr>
+                <tr>
+                    <td>Выберите зявителей не прошедших аттестацию на <strong>высшую</strong> категорию <br>
+                        <span class="help">В список попадают только те завяления, которые имеют статус
+                            "{% for s in stat %}{{ s.name }}{% if not forloop.last %}" или
+                            "{% endif %}{% endfor %}"</span>
+                    </td>
+                    <td>
+                        <select class="chosen" name="high-fail" id="high-fail" multiple="multiple">
+                            {% for req in high %}
+                                <option value="{{ req.pk }}"
+                                      {% if req in high_fail %}
+                                        selected="selected"
+                                      {% elif req.status.is_fail %}
+                                        selected="selected"
+                                      {% endif %}
+                                      >{{ req.fio }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Выберите зявителей не прошедших аттестацию на <strong>первую</strong> категорию <br>
+                        <span class="help">В список попадают только те завяления, которые имеют статус "
+                            {% for s in stat %}
+                                {{ s.name }}{% if not forloop.last %} или {% endif %}{% endfor %}"</span>
+                    </td>
+                    <td>
+                        <select class="chosen" name="first-fail" id="first-fail" multiple="multiple">
+                            {% for req in first %}
+                                <option value="{{ req.pk }}"
+                                      {% if req in first_fail %}
+                                        selected="selected"
+                                      {% elif req.status.is_fail %}
+                                        selected="selected"
+                                      {% endif %}
+                                      >{{ req.fio }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Выберите зявителей не прошедших аттестацию на <strong>соответствие занимаемой должности</strong>
+                        <br>
+                        <span class="help">В список попадают только те завяления, которые имеют статус "
+                            {% for s in stat %}
+                                {{ s.name }}{% if not forloop.last %} или {% endif %}{% endfor %}"</span>
+                    </td>
+                    <td>
+                        <select class="chosen" name="confirm-fail" id="confirm-fail" multiple="multiple">
+                            {% for req in confirm %}
+                                <option value="{{ req.pk }}"
+                                      {% if req in confirm_fail %}
+                                        selected="selected"
+                                      {% elif req.status.is_fail %}
+                                        selected="selected"
+                                      {% endif %}
+                                      >{{ req.fio }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                </tr>
+
+                <tr class="caption">
+                    <td><input type="submit" value="Сформировать протокол">
+                        <input type="button" value="Сформировать приказ" id="order-print"/>
+                        <input type="button" value="Сформировать приложения" id="addit-print"/></td>
+                    <td><img class="spinner" src="{{ STATIC_URL }}images/ajax-loader.gif" alt="Ждите..."></td>
+                </tr>
+            </table>
+
+        </form>
+    </div>
+    <iframe src="{{ file_link }}" frameborder="0" width="1" height="1" id="frame"></iframe>
+
+{% endblock %}

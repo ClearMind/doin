@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% load years %}
+{% load i18n %}
+{% block content %}
+    <div class="request">
+        <h2>Аттестационный лист</h2>
+        <ol>
+            <li>Фамилия, имя, отчество: <span class="data">{{ req.fio }}</span></li>
+            <li>Число, месяц и год рождения: <span class="data">{{ req.birth_date }}</span></li>
+            <li>Занимаемая должность на момент аттестации и дата назначения на эту должность:
+                <span class="data">{{ req.post }}, {{ req.post_date }}</span></li>
+            <li>Сведения о профессиональном образовании, наличии ученой степени, ученого звания:
+                <ul>
+                    {% for e in educations %}
+                        <li><span
+                              class="data">{{ e.institution }}, {{ e.diploma_year }} г., специальность "{{ e.speciality }}",
+                        квалификация "{{ e.qualification }}"</span>;
+                        </li>
+                    {% endfor %}
+                    {% if req.degree %}
+                        <li><span class="data">{{ req.degree }};</span></li>
+                    {% endif %}
+                    {% if req.academic_title %}
+                        <li><span class="data">{{ req.academic_title }}.</span></li>
+                    {% endif %}
+                </ul>
+            </li>
+            <li>Сведения о повышении квалификации за последние 5 лет до прохождения аттестации:
+                <span class="data">{{ req.trainings }}</span>
+            </li>
+            <li>Стаж педагогической работы (работы по специальности): <span class="data">
+                {{ req.pedagogical_experience }} {{ req.pedagogical_experience|years_ru }}</span></li>
+            <li>Общий трудовой стаж: <span class="data">{{ req.experience }} {{ req.experience|years_ru }}</span></li>
+            <li>
+                Результаты экспертной оценки: 1 этап: <span class="data">{{ first_stage_avg }}</span> баллов,
+                2 этап <span class="data">{{ second_stage_avg }}</span> баллов, общий балл: {{ total_grade }}
+
+            </li>
+            <li>Рекомендации аттестационной комиссии: <span class="data">
+                {{ req.recomendations|default_if_none:"Рекомендаций нет" }}</span>
+            </li>
+            <li>Решение аттестационной комиссии: <span class="data">
+                {{ req.decision|default_if_none:"Не внесено!" }}</span>
+            </li>
+            <li>Количественный состав аттестационной комиссии: <span
+                  class="data">&nbsp;{{ number_of_members }}&nbsp;</span>.
+                На заседании присутствовало
+                <span class="data">&nbsp;{{ req.number_of_members|default_if_none:"Не указано" }}&nbsp;</span>
+                членов аттестационной комиссии.
+            </li>
+            <li>Количество голосов за: <span class="data">{{ req.agree|default_if_none:"Не указано" }}</span>,
+                против: <span class="data">{{ req.disagree|default_if_none:"Не указано" }}</span></li>
+            {% if req.notes %}
+                <li>Примечания: <span class="data">{{ req.notes }}</span></li>
+            {% endif %}
+        </ol>
+        <table class="signs">
+            {% if commission.chairman %}
+                <tr>
+                    <td>Председатель аттестационной комиссии</td>
+                    <td></td>
+                    <td>{{ commission.chairman }}</td>
+                </tr>
+            {% endif %}
+            {% if commission.vice_chairman %}
+                <tr>
+                    <td>Заместитель председателя аттестационной комиссии</td>
+                    <td></td>
+                    <td>{{ commission.vice_chairman }}</td>
+                </tr>
+            {% endif %}
+            <tr>
+                <td>Секретарь аттестационной комиссии</td>
+                <td></td>
+                <td>{{ commission.secretary }}</td>
+            </tr>
+            {#            <tr>#}
+            {#                <td>Член аттестационной комиссии</td>#}
+            {#                <td></td>#}
+            {#                <td>{{ territory_member|default:"" }}</td>#}
+            {#            </tr>#}
+        </table>
+        <p style="margin-top: 1.5cm !important;">Дата проведения аттестации и принятия решения аттестационной комиссией:
+            <span class="data">{{ req.attestation_date|date:"d.m.y"|default_if_none:"__/__/____" }}</span></p>
+
+        <p>Установлена {{ req.qualification }} квалификационная категория сроком на 5 лет.</p>
+
+        <p>Приказ Департамента образования и молодёжной политики ХМАО-Югры от
+            <span class="data">{{ req.order_date|date:"d.m.y"|default_if_none:"__/__/____" }}</span>
+            №<span class="data">{{ req.order_number|default_if_none:"_____" }}</span><br>
+            МП</p>
+        <table class="signs">
+            <tr>
+                <td>С аттестационным листом ознакомлен(а)</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>С решением аттестационной комиссии согласна (согласен); не согласна (не согласен)</td>
+                <td></td>
+            </tr>
+        </table>
+    </div>
+    <hr/>
+    <div>
+        <a id="print" href="#">
+            <img src="{{ STATIC_URL }}images/print.png" alt=""> {% trans "Print" %}
+        </a>
+    </div>
+{% endblock %}

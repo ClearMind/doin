@@ -1,0 +1,1139 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2012
+# This file is distributed under the same license as the attestation package.
+# Южаков Александр <clear0mind@gmail.com>, 2012
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-04-24 09:11+0600\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2)\n"
+
+#: attestation/forms.py:9
+msgid "First name"
+msgstr "Имя"
+
+#: attestation/forms.py:10
+msgid "Last name"
+msgstr "Фамилия"
+
+#: attestation/forms.py:11
+msgid "Middle name"
+msgstr "Отчество"
+
+#: attestation/forms.py:12
+msgid "Genitive"
+msgstr "Родительный падеж"
+
+#: attestation/forms.py:13
+msgid "Birth date"
+msgstr "Дата рождения"
+
+#: attestation/forms.py:14
+msgid "Appointment date"
+msgstr "Введите дату назначения на должность в формате дд.мм.гггг"
+
+#: attestation/forms.py:15
+msgid "E-Mail"
+msgstr "E-Mail"
+
+#: attestation/forms.py:16
+msgid "Phone"
+msgstr "Телефон"
+
+#: attestation/forms.py:17
+msgid "Post"
+msgstr "Должность"
+
+#: attestation/forms.py:18
+msgid "Discipline"
+msgstr "Предмет"
+
+#: attestation/forms.py:21
+msgid "Territory"
+msgstr "Муниципальное образование"
+
+#: attestation/forms.py:23
+msgid "Child organization"
+msgstr "Подведомственная организация"
+
+#: attestation/forms.py:26
+msgid "Organization name"
+msgstr "Название организации"
+
+#: attestation/forms.py:30
+msgid "With qualification"
+msgstr "Имеющаяся категория"
+
+#: attestation/forms.py:31
+msgid "Expiration date"
+msgstr "Дата завершения"
+
+#: attestation/forms.py:32
+msgid "Experience in organization"
+msgstr "Стаж в организации"
+
+#: attestation/forms.py:33
+msgid "Experience in post"
+msgstr "Стаж в должности"
+
+#: attestation/forms.py:36 attestation/forms.py:43
+msgid "Educational institution"
+msgstr "Учебное заведение"
+
+#: attestation/forms.py:38 attestation/forms.py:45
+msgid "Speciality"
+msgstr "Специальность"
+
+#: attestation/forms.py:39 attestation/forms.py:46
+msgid "Qualification"
+msgstr "Квалификация"
+
+#: attestation/forms.py:40 attestation/forms.py:47
+msgid "Diploma year"
+msgstr "Год окончания по диплому"
+
+#: attestation/forms.py:51
+msgid "Degree"
+msgstr "Ученая степень"
+
+#: attestation/forms.py:53
+msgid "Academic title"
+msgstr "Ученое звание"
+
+#: attestation/forms.py:57
+msgid "Achievements and titles"
+msgstr "Награды и звания"
+
+#: attestation/forms.py:60
+msgid "Qualification category"
+msgstr "Заявляемая категория"
+
+#: attestation/forms.py:61
+msgid "Presence"
+msgstr "С присутствием"
+
+#: attestation/forms.py:62
+msgid "Experience"
+msgstr "Общий стаж"
+
+#: attestation/forms.py:63
+msgid "Pedagogical experience"
+msgstr "Педагогический стаж"
+
+#: attestation/forms.py:64
+msgid "Trainings"
+msgstr "Курсы"
+
+#: attestation/forms.py:67
+msgid "Results"
+msgstr "Опишите Ваши основные достижения"
+
+#: attestation/forms.py:72 attestation/forms.py:76 attestation/forms.py:80
+#: attestation/forms.py:81 attestation/forms.py:82 attestation/forms.py:89
+#: attestation/forms.py:90 attestation/forms.py:91
+msgid "Field required."
+msgstr "Обязательное поле."
+
+#: attestation/forms.py:73
+msgid "You must define expiration date if you have qualification"
+msgstr ""
+"Вы должны указать дату окончания срока действия квалификационной категории"
+
+#: attestation/forms.py:77
+msgid "Fields Territory and Organization name both must be filled."
+msgstr "Поля Муниципальное образование и Название организации обязательны."
+
+#: attestation/forms.py:84
+msgid ""
+"You must fill Territory and Organization name fields or Organization fields"
+msgstr ""
+"Необходимо заполнить поля Муниципальное образование и Название организации "
+"или поле Подведомственная организация"
+
+#: attestation/forms.py:92
+msgid ""
+"If you have second education, you must fill all fields for second education"
+msgstr ""
+
+#: attestation/models.py:15 attestation/models.py:27 attestation/models.py:41
+#: attestation/models.py:53 attestation/models.py:65 attestation/models.py:78
+#: attestation/models.py:113 attestation/models.py:132
+#: attestation/models.py:178 attestation/models.py:196
+#: attestation/models.py:208 attestation/models.py:220
+#: attestation/models.py:232 config/models.py:5
+msgid "name"
+msgstr "название"
+
+#: attestation/models.py:21
+msgid "achievement"
+msgstr "награда"
+
+#: attestation/models.py:22
+msgid "achievements"
+msgstr "награды"
+
+#: attestation/models.py:28 attestation/models.py:80
+msgid "abbreviate"
+msgstr "аббревиатура"
+
+#: attestation/models.py:34
+msgid "settlement type"
+msgstr "тип поселения"
+
+#: attestation/models.py:35
+msgid "settlement types"
+msgstr "типы поселений"
+
+#: attestation/models.py:40
+msgid "type"
+msgstr "тип"
+
+#: attestation/models.py:47
+msgid "settlement"
+msgstr "поселение"
+
+#: attestation/models.py:48
+msgid "settlements"
+msgstr "поселения"
+
+#: attestation/models.py:59 attestation/models.py:99 attestation/models.py:149
+#: attestation/models.py:259
+msgid "territory"
+msgstr "муниципальное образование"
+
+#: attestation/models.py:60
+msgid "territories"
+msgstr "муниципальные образования"
+
+#: attestation/models.py:66
+msgid "genitive"
+msgstr "родительный падеж"
+
+#: attestation/models.py:72 attestation/models.py:96 attestation/models.py:147
+#: attestation/models.py:256
+msgid "post"
+msgstr "должность"
+
+#: attestation/models.py:73
+msgid "posts"
+msgstr "должности"
+
+#: attestation/models.py:79
+msgid "full name"
+msgstr "полное имя"
+
+#: attestation/models.py:87 attestation/models.py:97 attestation/models.py:148
+#: attestation/models.py:260
+msgid "organization"
+msgstr "организация"
+
+#: attestation/models.py:88
+msgid "organizations"
+msgstr "организации"
+
+#: attestation/models.py:93 attestation/models.py:144
+#: attestation/models.py:251
+msgid "first name"
+msgstr "имя"
+
+#: attestation/models.py:94 attestation/models.py:145
+#: attestation/models.py:252
+msgid "last name"
+msgstr "фамилия"
+
+#: attestation/models.py:95 attestation/models.py:146
+#: attestation/models.py:253
+msgid "middle name"
+msgstr "отчество"
+
+#: attestation/models.py:98
+msgid "appeal in request"
+msgstr "обращение в заявлении"
+
+#: attestation/models.py:105
+msgid "certifying commission member"
+msgstr "член аттестационной комиссии"
+
+#: attestation/models.py:106
+msgid "certifying commission members"
+msgstr "члены аттестационной комиссии"
+
+#: attestation/models.py:111
+msgid "creation date"
+msgstr "дата создания"
+
+#: attestation/models.py:112 attestation/models.py:265
+msgid "expiration date"
+msgstr "дата завершения"
+
+#: attestation/models.py:113 attestation/models.py:179
+msgid "name in request"
+msgstr "название в заявлении"
+
+#: attestation/models.py:114
+msgid "members"
+msgstr "члены"
+
+#: attestation/models.py:115
+msgid "chairman"
+msgstr "председатель"
+
+#: attestation/models.py:117
+msgid "vaice chairman"
+msgstr "заместитель председателя"
+
+#: attestation/models.py:119
+msgid "secretary"
+msgstr "секретарь"
+
+#: attestation/models.py:126
+msgid "certifying commission"
+msgstr "аттестационная комиссия"
+
+#: attestation/models.py:127
+msgid "certifying commisions"
+msgstr "аттестационные комиссии"
+
+#: attestation/models.py:138 attestation/models.py:151
+msgid "educational area"
+msgstr "образовательная область"
+
+#: attestation/models.py:139
+msgid "educational areas"
+msgstr "образовательные области"
+
+#: attestation/models.py:150 attestation/models.py:274
+msgid "email"
+msgstr "E-Mail"
+
+#: attestation/models.py:157
+msgid "expert"
+msgstr "эксперт"
+
+#: attestation/models.py:158
+msgid "experts"
+msgstr "эксперты"
+
+#: attestation/models.py:180
+msgid "name in result"
+msgstr "название в результатах"
+
+#: attestation/models.py:181
+msgid "for confirmation"
+msgstr "на соответствие"
+
+#: attestation/models.py:182
+msgid "first category"
+msgstr "первая категория"
+
+#: attestation/models.py:183
+msgid "best category"
+msgstr "высшая категория"
+
+#: attestation/models.py:184
+msgid "is active"
+msgstr "Активен"
+
+#: attestation/models.py:190 attestation/models.py:262
+#: attestation/models.py:347
+msgid "qualification"
+msgstr "квалификация"
+
+#: attestation/models.py:191
+msgid "qualifications"
+msgstr "квалификации"
+
+#: attestation/models.py:202 attestation/models.py:271
+msgid "degree"
+msgstr "ученая степень"
+
+#: attestation/models.py:203
+msgid "degrees"
+msgstr "ученые степени"
+
+#: attestation/models.py:214 attestation/models.py:272
+msgid "academic title"
+msgstr "ученое звание"
+
+#: attestation/models.py:215
+msgid "academic titles"
+msgstr "ученые звания"
+
+#: attestation/models.py:226
+msgid "title"
+msgstr "звание"
+
+#: attestation/models.py:227
+msgid "titles"
+msgstr "звания"
+
+#: attestation/models.py:233
+msgid "is new"
+msgstr "новое"
+
+#: attestation/models.py:234
+msgid "is rejected"
+msgstr "отклонено"
+
+#: attestation/models.py:235
+msgid "is in expertize"
+msgstr "на экспертизе"
+
+#: attestation/models.py:236
+msgid "is expertise results received"
+msgstr "результаты экспертизы получены"
+
+#: attestation/models.py:237
+msgid "is done"
+msgstr "прошло аттестацию"
+
+#: attestation/models.py:238
+msgid "is fail"
+msgstr "не прошел аттестацию"
+
+#: attestation/models.py:245
+msgid "request status"
+msgstr "статус заявления"
+
+#: attestation/models.py:246
+msgid "request statuses"
+msgstr "статусы заявления"
+
+#: attestation/models.py:254
+msgid "genetive form of name"
+msgstr "имя в родительном падеже"
+
+#: attestation/models.py:255
+msgid "birth date"
+msgstr "дата рождения"
+
+#: attestation/models.py:257
+msgid "discipline"
+msgstr "предмет"
+
+#: attestation/models.py:258
+msgid "date of appointment"
+msgstr "дата назначения"
+
+#: attestation/models.py:261
+msgid "organization name"
+msgstr "название организации"
+
+#: attestation/models.py:263
+msgid "has qualification"
+msgstr "имеющаяся квалификация"
+
+#: attestation/models.py:266
+msgid "work results"
+msgstr "результаты работы"
+
+#: attestation/models.py:267
+msgid "experience"
+msgstr "стаж"
+
+#: attestation/models.py:268
+msgid "pedagogical experience"
+msgstr "педагогический стаж"
+
+#: attestation/models.py:269
+msgid "experience in post"
+msgstr "стаж в должности"
+
+#: attestation/models.py:270
+msgid "experience in organization"
+msgstr "стаж в организации"
+
+#: attestation/models.py:273
+msgid "with personal presence"
+msgstr "с личным присутствием"
+
+#: attestation/models.py:275
+msgid "trainings"
+msgstr "курсы"
+
+#: attestation/models.py:277
+msgid "phone"
+msgstr "телефон"
+
+#: attestation/models.py:278
+msgid "secret code"
+msgstr "код"
+
+#: attestation/models.py:279
+msgid "recomendations"
+msgstr "рекомендации"
+
+#: attestation/models.py:280
+msgid "decision"
+msgstr "решение"
+
+#: attestation/models.py:281
+msgid "notes"
+msgstr "примечания"
+
+#: attestation/models.py:282
+msgid "number of comission members"
+msgstr "количество членов аттестационной комиссии"
+
+#: attestation/models.py:283
+msgid "agree"
+msgstr "голосовало за"
+
+#: attestation/models.py:284
+msgid "disagree"
+msgstr "голосовало против"
+
+#: attestation/models.py:285
+msgid "retrain"
+msgstr "воздержалось"
+
+#: attestation/models.py:286
+msgid "achievments"
+msgstr "награды"
+
+#: attestation/models.py:287
+msgid "attestation date"
+msgstr "дата аттестации"
+
+#: attestation/models.py:288
+msgid "order date"
+msgstr "дата приказа"
+
+#: attestation/models.py:289
+msgid "order number"
+msgstr "номер приказа"
+
+#: attestation/models.py:311 attestation/models.py:348
+#: attestation/models.py:360
+msgid "request"
+msgstr "заявление"
+
+#: attestation/models.py:312
+msgid "requests"
+msgstr "заявкления"
+
+#: attestation/models.py:317 attestation/models.py:325
+msgid "comment"
+msgstr "коментарий"
+
+#: attestation/models.py:326
+msgid "comments"
+msgstr "коментарии"
+
+#: attestation/models.py:333
+msgid "first grade"
+msgstr "отметка первого этапа"
+
+#: attestation/models.py:334
+msgid "second grade"
+msgstr "отметка второго этапа"
+
+#: attestation/models.py:337
+msgid "expert in request"
+msgstr "эксперт в заявлении"
+
+#: attestation/models.py:338
+msgid "experts in request"
+msgstr "эксперты в заявлении"
+
+#: attestation/models.py:344
+msgid "institution"
+msgstr "учебное заведение"
+
+#: attestation/models.py:345
+msgid "diploma year"
+msgstr "год окончания"
+
+#: attestation/models.py:346
+msgid "speciality"
+msgstr "специальность"
+
+#: attestation/models.py:354
+msgid "education"
+msgstr "образование"
+
+#: attestation/models.py:355
+msgid "educations"
+msgstr "образования"
+
+#: attestation/models.py:361
+msgid "status"
+msgstr "статус"
+
+#: attestation/models.py:362
+msgid "date"
+msgstr "дата"
+
+#: attestation/models.py:368
+msgid "request flow"
+msgstr "движение завки"
+
+#: attestation/models.py:369
+msgid "request flows"
+msgstr "движения завки"
+
+#: attestation/models.py:375
+msgid "start date"
+msgstr "дата создания"
+
+#: attestation/models.py:376
+msgid "end_date"
+msgstr "дата завершения"
+
+#: attestation/models.py:378
+msgid "first stage max grade"
+msgstr "максимальный балл первого этапа"
+
+#: attestation/models.py:379
+msgid "second stage max grade"
+msgstr "максимальный балл второго этапа"
+
+#: attestation/models.py:381
+msgid "first stage min grade"
+msgstr "минимальный балл первого этапа"
+
+#: attestation/models.py:382
+msgid "second stage min grade"
+msgstr "минимальный балл второго этапа"
+
+#: attestation/models.py:383
+msgid "category"
+msgstr "категория"
+
+#: attestation/models.py:384
+msgid "is for child organization"
+msgstr "для подведомственной организации"
+
+#: attestation/models.py:386
+msgid "Place mark if this config for child_organiation, remove mark otherwise"
+msgstr ""
+"Установите галочку, если данная настройка относится к подведомственным "
+"организациям, иначе ничего не ставьте"
+
+#: attestation/models.py:389
+msgid "Config for period"
+msgstr "конфигурация на период"
+
+#: attestation/models.py:392
+msgid "config"
+msgstr "конфигурация"
+
+#: attestation/models.py:393
+msgid "configs"
+msgstr "конфигурации"
+
+#: attestation/models.py:398 attestation/models.py:410
+msgid "text"
+msgstr "текст"
+
+#: attestation/models.py:404
+msgid "criterion"
+msgstr "критерий"
+
+#: attestation/models.py:405
+msgid "criteria"
+msgstr "критерии"
+
+#: attestation/models.py:411
+msgid "cost"
+msgstr "цена в баллах"
+
+#: attestation/models.py:418
+msgid "indicator"
+msgstr "показатель"
+
+#: attestation/models.py:419
+msgid "indicators"
+msgstr "показатели"
+
+#: attestation/models.py:438
+msgid "Status of your request has been changed"
+msgstr "Статус вашего заявления изменился"
+
+#: attestation/models.py:458
+msgid "You assigned to expertise"
+msgstr "Вы назначены для экспертизы"
+
+#: attestation/models.py:479
+msgid "New comment"
+msgstr "Новый коментарий"
+
+#: attestation/views.py:30
+msgid "Send attestation request"
+msgstr "Отправить заявление"
+
+#: attestation/views.py:182 attestation/views.py:228
+msgid "Request"
+msgstr "Заявление"
+
+#: attestation/views.py:301
+msgid "Request detail"
+msgstr "Детали заявления"
+
+#: attestation/views.py:340
+msgid "Attestation sheet"
+msgstr "Аттестационный лист"
+
+#: attestation/views.py:450
+msgid "Results of work of experts"
+msgstr "Результаты работы экспертов"
+
+#: attestation/views.py:550 templates/requests.html:4
+msgid "All requests"
+msgstr "Все заявления"
+
+#: attestation/views.py:575
+msgid "All completed requests"
+msgstr "Все завершенные заявления"
+
+#: attestation/views.py:635
+msgid "Grade sheet for experts"
+msgstr "Оценочный лист для эксперта"
+
+#: attestation/views.py:647
+msgid "Expert sheet"
+msgstr "Экспертный лист"
+
+#: attestation/views.py:736
+msgid "Protocol"
+msgstr "Протокол"
+
+#: config/models.py:5
+msgid "Menu item name"
+msgstr "Название пункта меню"
+
+#: config/models.py:6
+msgid "Local reference to application page"
+msgstr "Локальная ссылка на страницу приложения"
+
+#: config/models.py:6
+msgid "link"
+msgstr "ссылка"
+
+#: config/models.py:7
+msgid "Order of item in menu"
+msgstr "Порядок следования пункта меню"
+
+#: config/models.py:7
+msgid "order"
+msgstr "порядок"
+
+#: config/models.py:8
+msgid "public"
+msgstr "публичный"
+
+#: config/models.py:8
+msgid "Show for unauthorized users"
+msgstr "Показывать неавторизованным пользователям"
+
+#: config/models.py:14
+msgid "menu item"
+msgstr "пункт меню"
+
+#: config/models.py:15
+msgid "Menu items"
+msgstr "Пункты меню"
+
+#: config/models.py:20
+msgid "news title"
+msgstr "заголовок новости"
+
+#: config/models.py:21
+msgid "news text"
+msgstr "текст новости"
+
+#: config/models.py:22
+msgid "publishing date"
+msgstr "дата публикации"
+
+#: config/models.py:28
+msgid "news item"
+msgstr "новость"
+
+#: config/models.py:29
+msgid "news items"
+msgstr "новости"
+
+#: config/views.py:11
+msgid "Home page"
+msgstr "Главная страница"
+
+#: reports/forms.py:6
+msgid "From date"
+msgstr "С даты"
+
+#: reports/forms.py:7
+msgid "To date"
+msgstr "До даты"
+
+#: reports/views.py:18
+msgid "Requests report by territories"
+msgstr "Отчет по муниципальным образованиям заявителей"
+
+#: reports/views.py:54
+msgid "Request report by category"
+msgstr "Отчет по категориям заявлений"
+
+#: reports/views.py:85
+msgid "Report by statuses in date range"
+msgstr "Отчет по статусам на период"
+
+#: reports/views.py:121
+msgid "Reports"
+msgstr "Отчеты"
+
+#: reports/views.py:124
+msgid "By territories"
+msgstr "По муниципальным образованиям"
+
+#: reports/views.py:125
+msgid "By requested categories"
+msgstr "По заявляемым категориям"
+
+#: reports/views.py:126
+msgid "By statuses"
+msgstr "По статусам"
+
+#: reports/views.py:127
+msgid "By experts"
+msgstr "По экспертам"
+
+#: reports/views.py:136
+msgid "Report by experts"
+msgstr "Отчет по экспертам"
+
+#: templates/404.html:4
+msgid "Page not found!"
+msgstr "Страница не найдена!"
+
+#: templates/404.html:6
+msgid "Check URL or go to"
+msgstr "Проверьте правильность адреса или перейдите на "
+
+#: templates/404.html:8
+msgid "home page"
+msgstr "главную страницу"
+
+#: templates/base.html:40
+msgid "Menu"
+msgstr "Меню"
+
+#: templates/expert_blank.html:89 templates/expert_results.html:119
+#: templates/expert_sheet.html:54 templates/request.html:266
+#: templates/sheet.html:102
+msgid "Print"
+msgstr "Печать"
+
+#: templates/login.html:6
+msgid "Your username and password didn't match. Please try again."
+msgstr "Допущена ошибка в имени пользователя или пароле. Попробуйте еще раз."
+
+#: templates/login.html:22 templates/menu.html:9
+msgid "Log In"
+msgstr "Вход"
+
+#: templates/menu.html:15
+msgid "Configure menu"
+msgstr "Настройте меню"
+
+#: templates/menu.html:18
+msgid "Log Out"
+msgstr "Выход"
+
+#: templates/request.html:287
+msgid "Register"
+msgstr "Зарегистрировать"
+
+#: templates/request_details.html:6
+msgid "Request details"
+msgstr "Детали заявления"
+
+#: templates/request_details.html:148
+msgid "No experts assigned for this request."
+msgstr "Эксперты не назначены для данного заявления"
+
+#: templates/request_details.html:181
+msgid "Delete"
+msgstr "Удалить"
+
+#: templates/request_details.html:190 templates/request_form.html:456
+msgid "Save"
+msgstr "Сохранить"
+
+#: templates/request_details.html:191
+msgid "Loading..."
+msgstr "Загрузка..."
+
+#: templates/request_details.html:196
+msgid "Expertise results"
+msgstr "Результаты экспертизы"
+
+#: templates/request_details.html:198
+msgid "Attestation"
+msgstr "Аттестация"
+
+#: templates/request_details.html:204
+msgid "Attestation data"
+msgstr "Данные аттестации"
+
+#: templates/request_details.html:230
+msgid "Recomendations of AC"
+msgstr "Рекомендации АК"
+
+#: templates/request_details.html:235
+msgid "Decision of AC"
+msgstr "Решение АК"
+
+#: templates/request_details.html:240
+msgid "Number of members of AC"
+msgstr "Количество членов АК"
+
+#: templates/request_details.html:245
+msgid "Notes"
+msgstr "Примечания"
+
+#: templates/request_form.html:48
+msgid "Requester data"
+msgstr "Данные заявителя"
+
+#: templates/request_form.html:123
+msgid "Job place"
+msgstr "Место работы"
+
+#: templates/request_form.html:253
+msgid "Education"
+msgstr "Образование"
+
+#: templates/request_form.html:310
+msgid "Add second education"
+msgstr "Добавить второе образование"
+
+#: templates/request_form.html:378
+msgid "Additional data"
+msgstr "Дополнительные данные"
+
+#~ msgid "is document received"
+#~ msgstr "получены документы"
+
+#~ msgid "Simple event"
+#~ msgstr "Простое событие"
+
+#~ msgid "Simple event, not state"
+#~ msgstr "Простое событие, не состояние"
+
+#~ msgid "Requester:"
+#~ msgstr "Заявитель:"
+
+#~ msgid "Job place:"
+#~ msgstr "Место работы:"
+
+#~ msgid "Requested qualification:"
+#~ msgstr "Заявляемая категория:"
+
+#~ msgid "Current status:"
+#~ msgstr "Текущий статус заявления:"
+
+#~ msgid "change to:"
+#~ msgstr "изменить на:"
+
+#~ msgid "Select new status"
+#~ msgstr "Выберите новый статус"
+
+#~ msgid "Experts"
+#~ msgstr "Эксперты"
+
+#~ msgid "Assign expert: "
+#~ msgstr "Назначить экспертов:"
+
+#~ msgid "Choose the experts"
+#~ msgstr "Выберите экспертов"
+
+#~ msgid "Territory undefined"
+#~ msgstr "Муниципальное образование неуказано"
+
+#~ msgid "Assign"
+#~ msgstr "Назначить"
+
+#~ msgid "Choose one or more experts for this request"
+#~ msgstr "Выберите одного или нескольких экспертов для данного заявления"
+
+#~ msgid "Expert"
+#~ msgstr "Эксперт"
+
+#~ msgid "First stage grade"
+#~ msgstr "Отметка первого этапа"
+
+#~ msgid "Second stage grade"
+#~ msgstr "Отметка второго этапа"
+
+#~ msgid "Votes of agree"
+#~ msgstr "Голосов за"
+
+#~ msgid "Votes of disagree"
+#~ msgstr "Голосов против"
+
+#~ msgid "Filter by category"
+#~ msgstr "Фильтровать по категории"
+
+#~ msgid "Set status to "
+#~ msgstr "Сменить статус на "
+
+#~ msgid "next state"
+#~ msgstr "следуюшее состояние"
+
+#~ msgid "Your first name"
+#~ msgstr "Введите имя"
+
+#~ msgid "Your last name"
+#~ msgstr "Введите фамилию"
+
+#~ msgid "Your middle name"
+#~ msgstr "Введите отчество"
+
+#~ msgid "Genitive form of full name"
+#~ msgstr "Введите полное имя в родительном падеже"
+
+#~ msgid "Your birth date"
+#~ msgstr "Введите дату Вашего рождения в формате дд.мм.гггг"
+
+#~ msgid "Your E-Mail"
+#~ msgstr "Введите адрес электронной почты (личный или ОУ)"
+
+#~ msgid "Your contact phone"
+#~ msgstr "Введите ваш контактный телефон (не обязательно)"
+
+#~ msgid "Your common post"
+#~ msgstr "Введите Вашу основная должность в ОУ"
+
+#~ msgid "Territory where your organization located"
+#~ msgstr ""
+#~ "Выберите из списка муниципальное образование, в котором находится Ваша "
+#~ "организация"
+
+#~ msgid "Select child organization"
+#~ msgstr "Выберите из списка подведомственную организацию"
+
+#~ msgid "Organization full name"
+#~ msgstr "Введите полное название Вашего ОУ"
+
+#~ msgid "Your current qualification category"
+#~ msgstr ""
+#~ "Выберите из списка категорию, которую имеете на момент подачи заявления"
+
+#~ msgid "first time request"
+#~ msgstr "не имею"
+
+#~ msgid "Expiration date of your current qualification"
+#~ msgstr ""
+#~ "Введите дату окончания срока действия квалификационной категории (при ее "
+#~ "наличии) в формате дд.мм.гггг"
+
+#~ msgid "Experience in organization, full years"
+#~ msgstr "Введите стаж в ОУ (полных лет)"
+
+#~ msgid "Experience in post, full years"
+#~ msgstr "Введите стаж работы в заявляемой должности (полных лет)"
+
+#~ msgid "Educational institution full name"
+#~ msgstr "Введите полное название учебного заведения"
+
+#~ msgid "Speciality name"
+#~ msgstr "Введите специальность"
+
+#~ msgid "Qualification in diploma"
+#~ msgstr "Введите квалификацию по диплому"
+
+#~ msgid "Diploma receiving year"
+#~ msgstr "Введите год получения диплома об образовании"
+
+#~ msgid "Educational institution of second education"
+#~ msgstr "Введите полное название учебного заведения второго образования"
+
+#~ msgid "Speciality of second education"
+#~ msgstr "Введите специальность второго высшего образования"
+
+#~ msgid "Qualification in diploma of second education"
+#~ msgstr "Введите квалификацию по диплому второго образования"
+
+#~ msgid "Diploma year of second education"
+#~ msgstr "Введите год получения диплома о втором образовании"
+
+#~ msgid "Select degrees"
+#~ msgstr "Выберите из списка имеющиеся ученые степени (одну или несколько)"
+
+#~ msgid "Select academic title"
+#~ msgstr "Выберите из списка имеющееся ученое звание"
+
+#~ msgid "Select one or more achievements you have"
+#~ msgstr "Выберите из списка имеющиеся награды и звания (одно или несколько)"
+
+#~ msgid "Select qualification category"
+#~ msgstr "Выберите из списка заявляемую категорию"
+
+#~ msgid "With presence in attestation"
+#~ msgstr ""
+#~ "Установите галочку, если хотите лично присутствовать на заседании АК"
+
+#~ msgid "Experience, full years"
+#~ msgstr "Введите общий трудовой стаж (полных лет)"
+
+#~ msgid "Pedagogical experience, full years"
+#~ msgstr "Введите педагогический стаж (полных лет)"
+
+#~ msgid "Trainings, last two"
+#~ msgstr ""
+#~ "Введите полное название, количество часов, год повышения квалификации (не "
+#~ "более двух курсов)"
+
+#~ msgid "Change data"
+#~ msgstr "Изменить данные"
+
+#~ msgid "Select request type"
+#~ msgstr "Выберите уровень подчинения вашего ОУ"
+
+#~ msgid "name of post"
+#~ msgstr "название должности"
+
+#~ msgid "is vice-chairman"
+#~ msgstr "заместитель председателя"
+
+#~ msgid "post in commission"
+#~ msgstr "должность в комиссии"
+
+#~ msgid "posts in commission"
+#~ msgstr "должности в комиссии"
+
+#~ msgid "expert commission"
+#~ msgstr "экспертная комиссия"
+
+#~ msgid "expert commissions"
+#~ msgstr "экспертные комиссии"
+
+#~ msgid "Assign now."
+#~ msgstr "Назначить сейчас"
+
+#~ msgid "All details about your request"
+#~ msgstr "Все детали вашего заяления"
+
+#~ msgid "here"
+#~ msgstr "здесь"
+
+#~ msgid "Submit"
+#~ msgstr "Отправить"
+
+#~ msgid "Organization"
+#~ msgstr "Организация"
+
+#~ msgid "educational institution"
+#~ msgstr "учебное заведение"

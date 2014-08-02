@@ -1,0 +1,657 @@
+/* ==|== primary styles =====================================================
+   Author: Южаков Александр
+   ========================================================================== */
+
+@import "compass/reset";
+@import "compass/css3";
+
+$font-color: #262626;
+$border-color: #bbb;
+$logo-width: 150px;
+$logo-padding: 16px;
+
+body {
+  min-height: 768px;
+  min-width: 1110px;
+  background: #ddd;
+  @include background(radial-gradient(#fff, #ddd 600px));
+  font-size: 18px;
+  padding-bottom: 32px;
+  font-family: "Georgia", "PT Serif", serif;
+}
+
+p {
+  margin: 1em;
+  line-height: 1.5em;
+  padding: 0.5em;
+  text-align: justify;
+  &.message {
+    border: 1px solid $border-color;
+    background: #48f599;
+    font-size: 110%;
+  }
+}
+
+h1 {
+  margin: 1em;
+  text-align: center;
+  font-weight: bold;
+  font-size: 110%;
+}
+
+h2 {
+  margin: 1em;
+  text-align: center;
+}
+
+ol {
+  margin: 0.5em 2em;
+  list-style: decimal;
+  li {
+    padding: 0.5em;
+    margin-left: 1em;
+  }
+}
+
+footer {
+  position: fixed;
+  bottom: 0;
+  height: 32px;
+  width: 100%;
+  #footer {
+    height: 100%;
+    width: 100%;
+    background-color: #eee;
+    @include box-shadow(0 -1px 0 white);
+    color: #9e9e9e;
+    text-align: center;
+    text-shadow: 0 1px 0 white;
+    padding-top: 7px;
+  }
+}
+
+header {
+  float: left;
+}
+
+.header-block {
+  @include box-sizing(border-box);
+  width: 100%;
+  height: 32px;
+  padding-top: 14px;
+  text-align: center;
+  text-transform: uppercase;
+  font-weight: bold;
+  letter-spacing: 2px;
+  text-shadow: 0 1px 0 #eee;
+  color: $font-color;
+}
+
+#company {
+  @extend .header-block;
+}
+
+#app-name {
+  @extend .header-block;
+  font-size: 90%;
+  margin: {
+    left: auto;
+    right: auto;
+  }
+  width: 95%;
+  border-bottom: 1px solid darken($border-color, 10%);
+  @include box-shadow(0 1px 0 white);
+  padding-bottom: 25px;
+}
+
+$box-shadow: 1px 1px 1px #888, -1px -1px 0 #eee;
+
+#left-sidebar {
+  width: $logo-width + 2*$logo-padding;
+  margin: 4px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: #adadad;
+  @include border-radius(9px);
+  @include box-shadow($box-shadow);
+  @include background(linear-gradient(left, #adadad, #ccc));
+  min-height: 700px;
+
+  color: $font-color;
+  font-family: "Helvetica", sans-serif;
+  font-size: 87%;
+  font-weight: bolder;
+  text-shadow: 0 1px 0 #ccc;
+  z-index: 99;
+
+  #logo {
+    img {
+      padding: $logo-padding;
+    }
+  }
+
+  #menu-label {
+    border: {
+      bottom: 1px solid gray;
+      top: 1px solid gray;
+    }
+    font-size: 105%;
+    padding: 7px;
+    text-align: center;
+    margin-bottom: 25px;
+    font-weight: bold;
+    letter-spacing: 2px;
+  }
+
+  #menu {
+    ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+
+      li {
+        padding: 7px;
+        margin: 5px;
+        border: {
+          left: 3px solid gray;
+          bottom: 1px solid gray;
+        }
+        &.current {
+          border-left: 3px solid #034990;
+        }
+        @include transition(padding .2s);
+        &:hover {
+          padding-left: 10px;
+          color: #000000;
+        }
+
+        a {
+          text-decoration: none;
+          color: $font-color;
+          &:hover {
+            color: darken($font-color, 10%);
+          }
+        }
+      }
+    }
+  }
+}
+
+#main {
+  min-width: 1008px - $logo-width + 2*$logo-padding;
+  margin: 5px 5px 5px $logo-width + 2*$logo-padding + 8px;
+  border: 1px solid $border-color;
+  @include box-shadow(1px 1px 0 white, inset 1px 1px 0 white);
+  padding: 8px;
+  min-height: 700px;
+}
+
+.form {
+  background: #ddd;
+  @include border-radius(10px);
+  @include box-shadow($box-shadow);
+  width: 90%;
+  margin: 20px auto;
+  padding: 32px;
+  font-family: "helvetica", sans-serif;
+  font-size: 80%;
+  //text-transform: uppercase;
+  text-shadow: 0 1px 0 #eee;
+
+  .help {
+    text-transform: none;
+    color: #888;
+  }
+
+  table {
+    width: 100%;
+    tr:hover {
+      background-color: #d8d8d8;
+    }
+    tr.caption {
+      background-color: #eee;
+      color: #000;
+      text-transform: none;
+      border: 1px solid gray;
+      td {
+        text-align: center;
+        text-shadow: none;
+      }
+    }
+    $border: 1px solid gray;
+    border: $border;
+    td {
+      padding: 8px 5px;
+      vertical-align: middle;
+      &.label {
+        border-left: $border;
+        font-weight: normal;
+        letter-spacing: 1px;
+      }
+
+      input[type="text"], select, textarea, input[type="password"] {
+        max-width: 300px;
+        background-color: #ffffff;
+        border: 0;
+        @include box-shadow(inset 1px 1px 1px gray, 1px 1px 0 #fff);
+        @include border-radius(3px);
+        padding: 4px;
+        &:focus {
+          outline: none;
+        }
+        outline: none;
+        //font-size: 16px;
+        text-align: left;
+        font-family: sans-serif;
+      }
+
+      textarea {
+        max-width: none;
+        //font-size: 14px;
+      }
+
+      select {
+        border: 1px solid $border-color;
+      }
+
+      &.required input, &.required select, &.required textarea {
+        background-color: #ffd1cf;
+      }
+
+      &.error {
+        border-right: $border;
+        border-left: $border;
+        color: red;
+        font-weight: bold;
+        text-shadow: none;
+      }
+    }
+    .organization_field {
+      display: none;
+    }
+  }
+
+  input[type="submit"], input[type="button"] {
+    padding: 5px 15px;
+    font-family: inherit;
+  }
+
+  .message {
+    font-size: 110%;
+    text-transform: none;
+    padding: 12px;
+    text-align: justify;
+    line-height: 1.4em;
+  }
+  .message.bad {
+    color: #8f0000;
+  }
+}
+
+.request {
+  margin: 3em 1cm 3em 1cm;
+
+  padding: 2cm 1cm;
+  width: 800px;
+
+  .regnum {
+    position: relative;
+    top: -1.5cm;
+    left: -0.5cm;
+    color: gray;
+    margin: 0;
+    padding: 0;
+  }
+
+  &.result {
+    width: 100%;
+    max-width: 300mm;
+    max-height: 210mm;
+
+    @include box-sizing(border-box);
+    margin: 1cm 0 1cm 0;
+
+  }
+
+  border: 1px solid gray;
+  background-color: white;
+  @include box-shadow(2px 2px 1px #424242);
+
+  table {
+    width: 100%;
+    border: 0;
+    margin-top: 0.5cm;
+    td {
+      border: 0;
+      padding: 0.5em;
+    }
+  }
+
+  table.align-right {
+    width: auto;
+    margin: 0 auto 1cm auto;
+    border: 0;
+    td.half {
+      width: 50%;
+      border-bottom: 0;
+    }
+    td {
+      padding: 5px;
+      font-style: italic;
+    }
+  }
+
+  h2 {
+    text-align: center;
+    text-transform: uppercase;
+    margin: 1em;
+  }
+
+  h3 {
+    text-align: center;
+    font-size: 95%;
+  }
+
+  .right {
+    text-align: right;
+  }
+
+  p {
+    text-indent: 0;
+    margin: 0.3em 0 !important;
+    text-align: justify;
+    line-height: 1.5em;
+    padding: 0;
+  }
+
+  .data {
+    font-style: italic;
+    //text-decoration: underline;
+    &.results {
+      font-size: 90%;
+    }
+  }
+
+  table.result {
+    @include box-sizing(border-box);
+    td, th {
+      font-family: sans-serif;
+      text-align: center;
+      border: 1px solid black;
+      padding: 1px;
+      font-size: 90%;
+    }
+    margin-top: 5mm;
+    td {
+      font-size: medium;
+    }
+    tr.header {
+      th {
+        paddin: 3mm;
+        font-weight: bold;
+      }
+    }
+  }
+
+  table.portrait {
+    td, th {
+      border: 1px solid black;
+      padding: 1mm;
+      text-align: left;
+      font-family: sans-serif;
+    }
+    th {
+      text-align: center;
+      font-weight: bold;
+    }
+  }
+
+  .list {
+    margin-left: 2cm;
+  }
+  ul {
+    list-style: circle;
+    margin-left: 2cm;
+  }
+  ol li {
+    padding: 0.3em;
+  }
+}
+
+.both {
+  clear: both;
+}
+
+table.data {
+  width: 100%;
+  font-family: helvetica, sans-serif;
+  font-size: 95%;
+  margin: 2px;
+  padding: 0;
+  background-color: #ffffff;
+
+  tr:hover {
+    background-color: #e0e9ee;
+  }
+
+  a {
+    text-decoration: none;
+    color: #000000;
+    &:hover {
+      text-decoration: underline;
+      color: #00008b;
+    }
+  }
+
+  th {
+    background-color: #9fd7d6;
+    border: 1px solid darken($border-color, 20%);
+    padding: 3px;
+    font-size: 90%;
+    font-weight: bold;
+  }
+
+  td {
+    border: 1px solid $border-color;
+    padding: 3px;
+  }
+
+  ol {
+    list-style: none;
+    margin: 3px;
+    padding: 0;
+    li {
+      margin: 0;
+      padding: 4px;
+    }
+  }
+
+  input {
+    border: 0;
+    outline: 0;
+    font-family: sans-serif;
+    &:focus {
+      outline: 0;
+    }
+    &.changed {
+      font-weight: bold;
+    }
+  }
+}
+
+table.data_ {
+  @extend table.data;
+}
+
+table.vertical {
+  @include box-shadow(inset 1px 1px 1px gray, 1px 1px 0 white, inset -1px -1px 1px lightgray);
+  background-color: white;
+  @include border-radius(4px);
+  border-collapse: separate;
+  border-spacing: 4px;
+  tr.hidden {
+    display: 0;
+  }
+  th {
+    padding: 6px 8px;
+    margin: 4px;
+    border-right: 3px solid #dadada;
+    text-align: right;
+  }
+  td {
+    padding: 6px;
+  }
+}
+
+emph {
+  font-style: italic;
+}
+
+div.news {
+  background-color: #ffffff;
+  padding: 0.5em;
+  @include border-radius(6px);
+  @include box-shadow(inset 1px 1px 1px gray, 1px 1px 0 white, inset -1px -1px 1px lightgray);
+
+  .date {
+    font-style: italic;
+    text-align: right;
+    color: #888;
+  }
+  p {
+    margin: 4px;
+    padding: 3px;
+    text-indent: 2em;
+  }
+  h2 {
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    width: 100%;
+    background-color: #eee;
+    margin-left: 0;
+    margin-right: 0;
+    padding: 3px;
+    border: 1px solid gray;
+    letter-spacing: 1px;
+  }
+}
+
+.action {
+  color: gray !important;
+
+  select {
+    border: 0;
+    background-color: white;
+    text-decoration: underline;
+    outline: none;
+    &:focus {
+      outline: none;
+    }
+  }
+}
+
+a.action:hover {
+  color: #000099 !important;
+}
+
+.changed {
+  font-weight: bold;
+  font-style: italic;
+}
+
+.spinner {
+  display: none;
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+
+#status {
+  line-height: 1.2em;
+}
+
+#changes {
+  font-size: 80%;
+  color: gray;
+  font-family: sans-serif;
+  &+a {
+    display: none;
+  }
+}
+
+table.signs {
+  border: 0;
+  margin: 0;
+  td {
+    border: 0;
+    padding: 10px;
+    text-align: left;
+  }
+  td:nth-child(2) {
+    border-bottom: 1px solid black;
+    min-width: 2cm;
+  }
+}
+
+.cm {
+  height: 1cm !important;
+}
+
+strong {
+  font-weight: bolder;
+}
+
+a.block {
+  display: block;
+  min-width: 1cm;
+  width: 100%;
+}
+
+// REPORTS STYLES
+
+body#report {
+  $report-border: 1px solid black;
+
+  background: white;
+  width: 100%;
+  header {
+    width: 100%
+  }
+  h2, h3 {
+    text-align: center;
+    margin: 1em auto 1em auto;
+  }
+  h2 {
+    text-transform: uppercase;
+    margin: 1.2em auto 1.2em auto;
+  }
+
+  table {
+    margin: 1em;
+    @include box-sizing(border-box);
+
+    th, td {
+      border: $report-border;
+      padding: 0.2em;
+    }
+    th {
+      font-weight: bold;
+      text-align: center;
+
+    }
+    td {
+      text-align: left;
+    }
+  }
+
+  ul, ol, dl {
+    margin-left: 1.5em;
+  }
+
+  footer {
+    width: 100%;
+    text-align: center;
+    color: gray;
+  }
+}

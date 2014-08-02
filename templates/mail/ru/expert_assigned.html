@@ -1,0 +1,20 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <meta lang="ru"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+</head>
+<body>
+<h1>Здравствуйте!</h1>
+
+<p>Вы назначены экспертом в рассмотрении заявления поступившего
+    в аттестационную комиссию от {{ eir.request.fio }}.
+</p>
+
+<p>
+    Детали заявления вы можете увидеть по следующему адресу в сети Интернет
+    <a href="{% url attestation.views.request eir.request.secret_code %}">здесь.</a>
+</p>
+</body>
+</html>

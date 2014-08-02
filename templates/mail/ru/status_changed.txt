@@ -1,0 +1,8 @@
+{% load i18n %}
+Статус вашего заявления изменился.
+
+{{ rf.date }} статус вашего заявления изменился на "{{ rf.status.name }}"
+
+Все детали вашего заявления доступны по адресу в сети Интернет:
+http://att.doinhmao.ru{% url attestation.views.request rf.request.secret_code %}
+
