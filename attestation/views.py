@@ -23,8 +23,6 @@ from attestation.models import *
 from libs.ODTFile import ODTFile, ODTFileError
 from settings import MEDIA_URL, MEDIA_ROOT
 
-from django.db import connection
-
 
 def request_form(request):
     """
@@ -216,6 +214,8 @@ def request(request, rcode):
             flow.request = r
             flow.status = status
             flow.save()
+            r.status = status
+            r.save()
 
     template = loader.get_template("request.html")
     c = RequestContext(request, locals())
@@ -262,6 +262,8 @@ def request_by_id(request, rid):
             flow.request = r
             flow.status = status
             flow.save()
+            r.status = status
+            r.save()
 
     template = loader.get_template("request.html")
     c = RequestContext(request, locals())
@@ -305,10 +307,10 @@ def request_details(request, rid):
     custom_scripts = ['libs/jquery.dataTables.min.js']
     custom_styles = ['jquery.dataTables.css', 'smoothness/jquery-ui-1.8.23.custom.css']
 
-    statuses = req.requestflow_set.all()
+    statuses = req.requestflow_set.select_related('status').all()
     all_statuses = RequestStatus.objects.all()
     all_experts = Expert.objects.select_related('area', 'territory').all()
-    eir = ExpertInRequest.objects.filter(request=req)
+    eir = ExpertInRequest.objects.select_related('expert', 'expert__area').filter(request=req)
 
     template = loader.get_template("request_details.html")
     c = RequestContext(request, locals())
@@ -320,18 +322,22 @@ def set_current_status(request, rid):
     req = get_object_or_404(Request, id=rid)
     if request.method == 'POST':
         data = request.POST.copy()
-        last_status = req.requestflow_set.order_by('-date')[0]
-        if 0 < data.get('set_status', -1) != last_status.status.pk:
+        last_flow = req.requestflow_set.order_by('-date')[0]
+        if 0 < data.get('set_status', -1) != last_flow.status.pk:
             try:
                 status = RequestStatus.objects.get(id=data.get('set_status', -1))
-                last_status.status = status
-                last_status.save()
+                last_flow.status = status
+                last_flow.save()
+                last_flow.request.status = status
+                last_flow.request.save()
             except ObjectDoesNotExist:
                 pass
-        if 0 < data.get('new_status', -1) != last_status.status.pk:
+        if 0 < data.get('new_status', -1) != last_flow.status.pk:
             try:
                 status = RequestStatus.objects.get(id=data.get('new_status', -1))
                 RequestFlow.objects.create(request=req, status=status)
+                req.status = status
+                req.save()
             except ObjectDoesNotExist:
                 pass
 
@@ -347,7 +353,7 @@ def sheet(request, rid):
     educations = req.education_set.all()
     commission = None
 
-    # get comission for request date
+    # get commission for request date
     rf = req.requestflow_set.filter(status__is_expertise_results_received=True)
     if rf:
         commission = CertifyingCommission.objects.filter(creation_date__lte=rf[0].date).filter(
@@ -557,18 +563,13 @@ def requests(request):
     statuses = RequestStatus.objects.filter(is_done=False)
 
     reqs = {}
-    flows = RequestFlow.objects.select_related(
-        'request', 'request__territory', 'request__organization', 'status', 'request__qualification',
-        'request__with_qualification', 'request__post'
-    ).distinct('request').order_by('request', '-date')
+    requests_ = Request.objects.select_related(
+        'territory', 'organization', 'status', 'qualification',
+        'with_qualification', 'post'
+    ).filter(status__in=statuses)
 
-    for flow in flows:
-        st = flow.status
-        if st in statuses:
-            if not st in reqs.keys():
-                reqs[st] = []
-
-            reqs[st].append(flow.request)
+    for r in requests_:
+        reqs.setdefault(r.status, []).append(r)
 
     template = loader.get_template("requests.html")
     c = RequestContext(request, locals())
@@ -584,14 +585,13 @@ def mark_as_completed(request):
     statuses = RequestStatus.objects.filter(is_expertise_results_received=True)
 
     reqs = {}
-    rfs = RequestFlow.objects.select_related().distinct('request').filter(status__in=statuses).order_by('request', '-date')
+    requests_ = Request.objects.select_related(
+        'territory', 'organization', 'status', 'qualification',
+        'with_qualification', 'post'
+    ).filter(status__in=statuses)
 
-    for r in rfs:
-        st = r.status
-        if st == r.request.status():
-            if not st in reqs.keys():
-                reqs[st] = []
-            reqs[st].append(r.request)
+    for r in requests_:
+        reqs.setdefault(r.status, []).append(r)
 
     try:
         s = RequestStatus.objects.get(is_done=True)
@@ -605,6 +605,8 @@ def mark_as_completed(request):
             for req in reqs.values():
                 for r in req:
                     RequestFlow.objects.create(request=r, status=s)
+                    r.status = s
+                    r.save()
             completed = True
             reqs = {}
 
@@ -637,10 +639,10 @@ def completed_requests(request, period=None):
     for flow in rfs:
         st = flow.status
         d = flow.date.strftime('%Y.%m')
-        periods.add(d)
-        if d != period:
-            continue
         if st in statuses:
+            periods.add(d)
+            if d != period:
+                continue
             if not d in unsorted_reqs.keys():
                 unsorted_reqs[d] = []
 
@@ -673,6 +675,8 @@ def next_status(request):
                 status = flows[0].status
                 if status.next_status:
                     f = RequestFlow.objects.create(request=req, status=status.next_status)
+                    req.status = status.next_status
+                    req.save()
                     locale.setlocale(locale.LC_TIME, '')
                     resp = {
                         "status": f.status.name,
@@ -735,53 +739,33 @@ def data_for_protocol():
     statuses = RequestStatus.objects.exclude(is_new=True).exclude(is_rejected=True).exclude(is_done=True).exclude(
         is_in_expertise=True)
 
-    current_flows = RequestFlow.objects.filter(status__in=statuses)
+    requests_ = Request.objects.select_related(
+        'status', 'qualification', 'territory', 'organization',
+        'organization__territory'
+    ).filter(status__in=statuses)
 
-    commission = CertifyingCommission.objects.filter(creation_date__lte=today).filter(expiration_date__gte=today)
+    by_q = {}
+    terr = set()
+    for r in requests_:
+        by_q.setdefault(r.qualification, []).append(r)
+        terr.add(r.territory)
+
+    commission = CertifyingCommission.objects.select_related('members').filter(
+        creation_date__lte=today
+    ).filter(
+        expiration_date__gte=today
+    )
     commission_not_configured = False
     if commission:
         commission = commission[0]
-    else:
-        commission_not_configured = True
-
-    # get commission and all it members
-    if commission:
         members = commission.members.all()
     else:
+        commission_not_configured = True
         members = CertifyingCommissionMember.objects.all()
 
-    terr = set()
-
-    high = []
-    for f in current_flows.select_related().filter(request__qualification=best):
-        f_request = f.request
-        if (f_request not in high) and (f.status == f_request.status()):
-            high.append(f_request)
-        request_territory = f_request.territory
-        if not request_territory in terr:
-            terr.add(request_territory)
-
-    first = []
-    for f in current_flows.select_related().filter(request__qualification=fst):
-        f_req = f.request
-        if (f_req not in first) and (f.status == f_req.status()):
-            first.append(f_req)
-        request_territory = f_req.territory
-        if not request_territory in terr:
-            terr.add(request_territory)
-
-    confirm = []
-    for f in current_flows.select_related().filter(request__qualification=confrm):
-        f_req = f.request
-        if (f_req not in confirm) and (f.status == f_req.status()):
-            confirm.append(f_req)
-        request_territory = f_req.territory
-        if not request_territory in terr:
-            terr.add(request_territory)
-
-    high = sorted(high, key=sort_key)
-    first = sorted(first, key=sort_key)
-    confirm = sorted(confirm, key=sort_key)
+    high = sorted(by_q.get(best, []), key=sort_key)
+    first = sorted(by_q.get(fst, []), key=sort_key)
+    confirm = sorted(by_q.get(confrm, []), key=sort_key)
 
     today = datetime.date.today().strftime("%d.%m.%Y")
 

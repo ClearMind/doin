@@ -288,6 +288,8 @@ class Request(models.Model):
     order_date = models.DateField(verbose_name=_('order date'), null=True, blank=True)
     order_number = models.IntegerField(verbose_name=_('order number'), null=True, blank=True)
 
+    status = models.ForeignKey(RequestStatus, blank=True, null=True)
+
     def save(self, force_insert=False, force_update=False, using=None):
         if not self.secret_code:
             self.secret_code = sha1(datetime.datetime.today().isoformat()).hexdigest()
@@ -299,13 +301,6 @@ class Request(models.Model):
 
     def __unicode__(self):
         return 'Request #%s' % self.id
-
-    def status(self):
-        statuses = self.requestflow_set.order_by('-date')
-        if statuses:
-            return statuses[0].status
-        else:
-            return None
 
     class Meta:
         verbose_name = _('request')
