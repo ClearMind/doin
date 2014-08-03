@@ -2,7 +2,7 @@
 {% block content %}
     <h1>Сводная ведомость по муниципальным образованиям</h1>
 
-    {% for t in territories %}
+    {% for t in territories_ %}
         {% if t.count or r.all_time_count %}
             <h2>{{ t.name }}</h2>
             <table>
@@ -17,10 +17,6 @@
                 <tr>
                     <th>На первую категорию</th>
                     <td>{{ t.fcount }}</td>
-                </tr>
-                <tr>
-                    <th>На соответствие</th>
-                    <td>{{ t.ccount }}</td>
                 </tr>
             </table>
             <table>

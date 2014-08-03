@@ -2,4 +2,5 @@ Changelog
 
 1. pages speedup through de-normalization
 2. Export.not_active (default=False)
-3. 
+3. Hidden for_confirmation category
+4.

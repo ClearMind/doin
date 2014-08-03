@@ -9,7 +9,7 @@ from django.http import HttpResponse
 from django.template import loader, RequestContext
 from django.utils.translation import ugettext_lazy as _
 
-from attestation.models import RequestFlow, Territory, Qualification, RequestStatus
+from attestation.models import RequestFlow, Territory, Qualification, RequestStatus, Request
 from reports.forms import DatePeriodForm
 
 
@@ -17,29 +17,29 @@ from reports.forms import DatePeriodForm
 def territories(request):
     title = _('Requests report by territories')
 
-    done_flows = RequestFlow.objects.filter(status__is_done=True)
+    requests = Request.objects.select_related(
+        'status', 'qualification', 'territory', 'organization__territory', 'organization', 'with_qualification', 'post'
+    ).filter(status__is_done=False)
 
-    territories = Territory.objects.all()
-    for t in territories:
+    by_territory = {}
+    for r in requests:
+        by_territory.setdefault(r.territory, []).append(r)
+
+    territories_ = Territory.objects.all()
+    for t in territories_:
         t.count = 0
-        t.ccount = 0
         t.hcount = 0
         t.fcount = 0
         t.requests = {}
-        for r in t.request_set.all():
-            if not r.requestflow_set.all():
+        for r in by_territory.get(t, []):
+            if r.qualification.first:
+                t.fcount += 1
+            elif r.qualification.best:
+                t.hcount += 1
+            elif r.qualification.for_confirmation:
                 continue
-            if r.requestflow_set.latest() not in done_flows:
-                t.count += 1
-                if not t.requests.has_key(r.qualification.name):
-                    t.requests[r.qualification.name] = []
-                t.requests[r.qualification.name].append(r)
-                if r.qualification.for_confirmation:
-                    t.ccount += 1
-                elif r.qualification.first:
-                    t.fcount += 1
-                elif r.qualification.best:
-                    t.hcount += 1
+            t.count += 1
+            t.requests.setdefault(r.qualification.name, []).append(r)
 
         for k in t.requests.keys():
             t.requests[k] = sorted(t.requests[k], key=attrgetter('last_name', 'first_name'))
@@ -53,24 +53,25 @@ def territories(request):
 def categories(request):
     title = _('Request report by category')
 
-    done_flows = RequestFlow.objects.filter(status__is_done=True)
+    requests = Request.objects.select_related(
+        'status', 'qualification', 'territory', 'organization__territory', 'organization', 'with_qualification', 'post'
+    ).filter(status__is_done=False)
+    categories_ = Qualification.objects.exclude(for_confirmation=True)
 
-    categories = Qualification.objects.all()
-    for c in categories:
+    by_category = {}
+    for r in requests:
+        by_category.setdefault(r.qualification, []).append(r)
+
+    for c in categories_:
         c.count = 0
         c.requests = {}
-        for r in c.request_set.all():
-            if not r.requestflow_set.all():
-                continue
-            if r.requestflow_set.latest() not in done_flows:
-                c.count += 1
-                if r.territory:
-                    terr_name = r.territory.name
-                else:
-                    terr_name = r.organization.territory.name
-                if not c.requests.has_key(terr_name):
-                    c.requests[terr_name] = []
-                c.requests[terr_name].append(r)
+        for r in by_category.get(c, []):
+            c.count += 1
+            if r.territory:
+                terr_name = r.territory.name
+            else:
+                terr_name = r.organization.territory.name
+            c.requests.setdefault(terr_name, []).append(r)
 
         for k in c.requests.keys():
             c.requests[k] = sorted(c.requests[k], key=attrgetter('last_name', 'first_name'))

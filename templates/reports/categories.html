@@ -2,7 +2,7 @@
 {% block content %}
     <h1>Сводная ведомость по заявляемым категориям</h1>
 
-    {% for c in categories %}
+    {% for c in categories_ %}
         {% if c.count or r.all_time_count %}
             <h2>{{ c.name }}</h2>
             <table>
