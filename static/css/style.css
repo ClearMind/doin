@@ -564,3 +564,7 @@ body#report {
     width: 100%;
     text-align: center;
     color: gray; }
+
+.dataTables_filter {
+    margin: 7px;
+}

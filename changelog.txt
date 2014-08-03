@@ -1,0 +1,5 @@
+Changelog
+
+1. pages speedup through de-normalization
+2. Export.not_active (default=False)
+3. 

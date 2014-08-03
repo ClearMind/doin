@@ -2,11 +2,13 @@ from django.contrib import admin
 from django.contrib.admin import  site
 from attestation.models import *
 
+
 class ExpertAdmin(admin.ModelAdmin):
-    list_display = ('last_name', 'first_name', 'middle_name', 'territory', 'area')
+    list_display = ('last_name', 'first_name', 'middle_name', 'territory', 'area', 'not_active')
     list_display_links = ('first_name', 'last_name', 'middle_name')
     list_filter = ('area',)
     search_fields = ('last_name', )
+    list_editable = ['not_active']
     fields = [
         'last_name',
         'first_name',
@@ -15,7 +17,8 @@ class ExpertAdmin(admin.ModelAdmin):
         'organization',
         'territory',
         'email',
-        'area'
+        'area',
+        'not_active'
     ]
 
 

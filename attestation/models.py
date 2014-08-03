@@ -1,3 +1,4 @@
+# coding=utf-8
 import datetime
 from hashlib import sha1
 
@@ -149,6 +150,7 @@ class Expert(models.Model):
     territory = models.ForeignKey(Territory, verbose_name=_('territory'))
     email = models.EmailField(verbose_name=_('email'), blank=True, null=True)
     area = models.ForeignKey(Area, verbose_name=_('educational area'))
+    not_active = models.BooleanField(verbose_name=u'Не активен', default=False)
 
     def __unicode__(self):
         return '%s %s.%s.' % (self.last_name, self.first_name[0], self.middle_name[0])
