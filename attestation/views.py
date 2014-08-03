@@ -309,7 +309,7 @@ def request_details(request, rid):
 
     statuses = req.requestflow_set.select_related('status').all()
     all_statuses = RequestStatus.objects.all()
-    all_experts = Expert.objects.select_related('area', 'territory').all()
+    all_experts = Expert.objects.select_related('area', 'territory').filter(not_active=False)
     eir = ExpertInRequest.objects.select_related('expert', 'expert__area').filter(request=req)
 
     template = loader.get_template("request_details.html")
