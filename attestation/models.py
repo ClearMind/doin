@@ -329,6 +329,7 @@ class ExpertInRequest(models.Model):
     request = models.ForeignKey(Request)
     first_grade = models.FloatField(verbose_name=_('first grade'), blank=True, null=True)
     second_grade = models.FloatField(verbose_name=_('second grade'), blank=True, null=True)
+    auto_assigned = models.BooleanField(verbose_name=u'Назначен автоматически', default=False)
 
     class Meta:
         verbose_name = _('expert in request')
@@ -436,6 +437,7 @@ def status_changed_slot(sender, **kwargs):
                                  'tln@doinhmao.ru', [inst.request.email])
     msg.attach_alternative(html_template.render(Context(c)), 'text/html')
     msg.send(fail_silently=not DEBUG)
+
 
 #noinspection PyUnusedLocal
 def expert_assigned_slot(sender, **kwargs):

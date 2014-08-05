@@ -6,7 +6,7 @@ from datetime import date, timedelta
 import datetime
 
 from django.contrib.auth.decorators import login_required
-from django.db.models import Max
+from django.db.models import Max, Count
 from django.utils.datastructures import SortedDict
 from django.views.decorators.cache import cache_page
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
@@ -209,7 +209,7 @@ def request(request, rcode):
         year += 1
 
     if request.method == "POST":
-        if not r.requestflow_set.all():
+        if not r.requestflow_set.count():
             flow = RequestFlow()
             flow.request = r
             flow.status = status
@@ -257,7 +257,7 @@ def request_by_id(request, rid):
         year += 1
 
     if request.method == "POST":
-        if not r.requestflow_set.all():
+        if not r.requestflow_set.count():
             flow = RequestFlow()
             flow.request = r
             flow.status = status
@@ -437,6 +437,19 @@ def assign_experts(request, rid):
             for eid in experts_pks:
                 expert = Expert.objects.get(id=eid)
                 ExpertInRequest.objects.get_or_create(request=r, expert=expert)
+        else:
+            experts_list = list(Expert.objects.filter(not_active=False).annotate(cnt=Count('request')).order_by('cnt'))
+            assigned_experts_count = ExpertInRequest.objects.filter(request=r).count()
+
+            i = 0
+            while assigned_experts_count < 2:
+                expert_in_request, created = ExpertInRequest.objects.get_or_create(
+                    request=r, expert=experts_list[i], defaults={'auto_assigned': True}
+                )
+                i += 1
+                if created:
+                    assigned_experts_count += 1
+
 
     except ObjectDoesNotExist:
         pass

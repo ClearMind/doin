@@ -160,6 +160,9 @@
                     <tr>
                         <td title="{{ e.expert.organization }}, {{ e.expert.post }}">
                             {{ e.expert }}, {{ e.expert.area }}
+                            {% if e.auto_assigned %}
+                            <span style="font-size: 80%; color: gray">(авто)</span>
+                            {% endif %}
                         </td>
                         <td class="grade">
                             <input type="text" data-id="{{ e.pk }}" value="{{ e.first_grade|default:"-" }}"

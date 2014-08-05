@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
+
 class MenuItem(models.Model):
     name = models.CharField(max_length=24, help_text=_("Menu item name"), verbose_name=_("name"))
     link = models.CharField(max_length=128, help_text=_("Local reference to application page"), verbose_name=_("link"))
