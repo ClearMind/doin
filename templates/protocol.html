@@ -69,27 +69,6 @@
                         </select>
                     </td>
                 </tr>
-                <tr>
-                    <td>Выберите зявителей не прошедших аттестацию на <strong>соответствие занимаемой должности</strong>
-                        <br>
-                        <span class="help">В список попадают только те завяления, которые имеют статус "
-                            {% for s in stat %}
-                                {{ s.name }}{% if not forloop.last %} или {% endif %}{% endfor %}"</span>
-                    </td>
-                    <td>
-                        <select class="chosen" name="confirm-fail" id="confirm-fail" multiple="multiple">
-                            {% for req in confirm %}
-                                <option value="{{ req.pk }}"
-                                      {% if req in confirm_fail %}
-                                        selected="selected"
-                                      {% elif req.status.is_fail %}
-                                        selected="selected"
-                                      {% endif %}
-                                      >{{ req.fio }}</option>
-                            {% endfor %}
-                        </select>
-                    </td>
-                </tr>
 
                 <tr class="caption">
                     <td><input type="submit" value="Сформировать протокол">

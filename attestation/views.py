@@ -778,7 +778,6 @@ def data_for_protocol():
 
     high = sorted(by_q.get(best, []), key=sort_key)
     first = sorted(by_q.get(fst, []), key=sort_key)
-    confirm = sorted(by_q.get(confrm, []), key=sort_key)
 
     today = datetime.date.today().strftime("%d.%m.%Y")
 
@@ -799,7 +798,6 @@ def protocol(request):
     members = pd['members']
     high = pd['high']
     first = pd['first']
-    confirm = pd['confirm']
     terr = pd['terr']
     stat = pd['statuses']
 
@@ -847,24 +845,10 @@ def protocol(request):
 
         first_fail = sorted(first_fail, key=attrgetter('last_name', 'first_name'))
 
-        confirm_fail = []
-        cf_pk = data.getlist('confirm-fail')
-        for i in cf_pk:
-            try:
-                r = Request.objects.get(id=i)
-                confirm_fail.append(r)
-            except ObjectDoesNotExist:
-                pass
-
-        confirm_fail = sorted(confirm_fail, key=attrgetter('last_name', 'first_name'))
-
         highfailtemplate = u"О не соответствии %s требованиям, предъявляемым к высшей квалификационной категории на \
 основании пункта ____ Положения об организационных формах и процедурах аттестации педагогических работников \
 государственных и муниципальных образовательных учреждений ХМАО–Югры. Голосование: ЗА ____, ПРОТИВ ____.\r"
         firstfailtemplate = u"О не соответствии %s требованиям, предъявляемым к первой квалификационной категории на \
-основании пункта ____ Положения об организационных формах и процедурах аттестации педагогических работников \
-государственных и муниципальных образовательных учреждений ХМАО–Югры. Голосование: ЗА ____, ПРОТИВ ____.\r"
-        confirmfailtemplate = u"О не соответствии %s требованиям, предъявляемым к занимаемой должности на \
 основании пункта ____ Положения об организационных формах и процедурах аттестации педагогических работников \
 государственных и муниципальных образовательных учреждений ХМАО–Югры. Голосование: ЗА ____, ПРОТИВ ____.\r"
 
@@ -875,10 +859,6 @@ def protocol(request):
         firstfailtexts = u""
         for r in first_fail:
             firstfailtexts += firstfailtemplate % r.genitive
-
-        confirmfailtexts = u""
-        for r in confirm_fail:
-            confirmfailtexts += confirmfailtemplate % r.genitive
 
         try:
             file = ODTFile(os.path.join(MEDIA_ROOT, 'odt/protocol.odt'))
@@ -892,17 +872,13 @@ def protocol(request):
                 "hcount": str(len(high)),
                 "hfail": str(len(high_fail)),
                 "hdone": str(len(high) - len(high_fail)),
-                "requestscount": str(len(high) + len(first) + len(confirm)),
+                "requestscount": str(len(high) + len(first)),
                 "territorycount": str(len(terr)),
                 "fcount": str(len(first)),
-                "ccount": str(len(confirm)),
                 "ffail": str(len(first_fail)),
-                "cfail": str(len(confirm_fail)),
                 "fdone": str(len(first) - len(first_fail)),
-                "cdone": str(len(confirm) - len(confirm_fail)),
                 "highfailtexts": highfailtexts,
                 "firstfailtexts": firstfailtexts,
-                "confirmfailtexts": confirmfailtexts
             })
             file.save(os.path.join(MEDIA_ROOT, 'generated/protocol_%s.doc' % protocol_date))
             file_link = os.path.join(MEDIA_URL, 'generated/protocol_%s.doc' % protocol_date)
@@ -945,7 +921,6 @@ def addition(request):
         pd = data_for_protocol()
         high = pd['high']
         first = pd['first']
-        confirm = pd['confirm']
         today = pd['today']
 
         # TODO sort_key
@@ -995,35 +970,6 @@ def addition(request):
             high_first_fail_text += '%s. %s, %s, %s\r' % (index, hf.fio(), post, ' '.join(org.split()))
             index += 1
 
-        confirm_fail = []
-        cf_pk = data.getlist('confirm-fail[]')
-        for i in cf_pk:
-            try:
-                r = Request.objects.get(id=i)
-                confirm_fail.append(r)
-                try:
-                    confirm.remove(r)
-                except ValueError:
-                    pass
-            except ObjectDoesNotExist:
-                pass
-
-        confirm_fail = sorted(confirm_fail, key=sort_key)
-        confirm_fail_text = ''
-        index = 1
-        for c in confirm_fail:
-            org = c.organization
-            if not org:
-                org = "%s, %s" % (c.organization_name, c.territory)
-            else:
-                org = org.name
-            if c.discipline:
-                post = c.post.name + " " + c.discipline
-            else:
-                post = c.post.name
-            confirm_fail_text += '%s. %s, %s, %s\r' % (index, c.fio(), post, ' '.join(org.split()))
-            index += 1
-
         high_text = ''
         index = 1
         for h in high:
@@ -1054,30 +1000,13 @@ def addition(request):
             first_text += '%s. %s, %s, %s\r' % (index, f.fio(), post, ' '.join(org.split()))
             index += 1
 
-        confirm_text = ''
-        index = 1
-        for c in confirm:
-            org = c.organization
-            if not org:
-                org = "%s, %s" % (c.organization_name, c.territory)
-            else:
-                org = org.name
-            if c.discipline:
-                post = c.post.name + " " + c.discipline
-            else:
-                post = c.post.name
-            confirm_text += '%s. %s, %s, %s\r' % (index, c.fio(), post, ' '.join(org.split()))
-            index += 1
-
         try:
             fl = ODTFile(os.path.join(MEDIA_ROOT, 'odt/pril.odt'))
             fl.fill_template({
                 "attdate": datetime.date.today().strftime("%d.%m.%Y"),
                 "five": high_first_fail_text,
-                "four": confirm_fail_text,
                 "one": high_text,
                 "two": first_text,
-                "three": confirm_text
             })
             fl.save(os.path.join(MEDIA_ROOT, 'generated/pril_%s.doc' % today))
             file_link = os.path.join(MEDIA_URL, 'generated/pril_%s.doc' % today)
