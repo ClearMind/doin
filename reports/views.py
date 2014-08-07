@@ -9,7 +9,7 @@ from django.http import HttpResponse
 from django.template import loader, RequestContext
 from django.utils.translation import ugettext_lazy as _
 
-from attestation.models import RequestFlow, Territory, Qualification, RequestStatus, Request
+from attestation.models import RequestFlow, Territory, Qualification, RequestStatus, Request, Expert, ExpertInRequest
 from reports.forms import DatePeriodForm
 
 
@@ -133,6 +133,7 @@ def reports_list(request):
     c = RequestContext(request, locals())
     return HttpResponse(template.render(c))
 
+
 @login_required
 def by_experts(request):
     title = _('Report by experts')
@@ -148,16 +149,27 @@ def by_experts(request):
             td = form.cleaned_data['todate']
 
             statuses = RequestStatus.objects.filter(is_expertise_results_received=True)
-            flows = RequestFlow.objects.filter(status__in=statuses).filter(
-                date__lte=td + datetime.timedelta(days=1)).filter(date__gte=fd)
+            flows = set(
+                f.request_id for f in
+                RequestFlow.objects.filter(status__in=statuses).filter(
+                    date__lte=td + datetime.timedelta(days=1),
+                    date__gte=fd
+                )
+            )
 
             experts = {}
-            for f in flows:
-                req = f.request
-                for e in req.experts.all():
-                    if not (e in experts):
-                        experts[e] = 0
-                    experts[e] += 1
+            for eir in ExpertInRequest.objects.select_related('expert', 'request').order_by('request__last_name'):
+                if eir.request_id in flows:
+                    request_ = eir.request
+                    if eir.first_grade and eir.second_grade:
+                        request_.count_ = '1, 2'
+                    elif eir.first_grade:
+                        request_.count_ = '1'
+                    elif eir.second_grade:
+                        request_.count_ = '2'
+                    else:
+                        request_.count_ = None
+                    experts.setdefault(eir.expert, []).append(request_)
 
     template = loader.get_template("reports/experts.html")
     c = RequestContext(request, locals())

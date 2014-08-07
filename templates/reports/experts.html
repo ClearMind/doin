@@ -46,14 +46,24 @@
                 <thead>
                 <tr>
                     <th>Эксперт</th>
-                    <th>Количество экспертиз</th>
+                    <th>Количество заявлений</th>
+                    <th>Аттестуемые</th>
                 </tr>
                 </thead>
                 <tbody>
-                    {% for e, c in experts.items %}
+                    {% for expert, requests in experts.items %}
                     <tr>
-                        <td>{{ e }}</td>
-                        <td>{{ c }}</td>
+                        <td title="{{ expert.pk }}">{{ expert }}</td>
+                        <td>{{ requests|length }}</td>
+                        <td>
+                        {% spaceless %}
+                        <ul>
+                            {% for r in requests %}
+                                <li title="{{ r.pk }}">{{ r.fio }} {% if r.count_ %}<span title="этап">({{ r.count_ }})</span>{% endif %};</li>
+                            {% endfor %}
+                        </ul>
+                        {% endspaceless %}
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
