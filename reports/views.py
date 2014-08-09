@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import datetime
 from operator import attrgetter
+import os
+from django.conf import settings
 
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
@@ -10,6 +12,7 @@ from django.template import loader, RequestContext
 from django.utils.translation import ugettext_lazy as _
 
 from attestation.models import RequestFlow, Territory, Qualification, RequestStatus, Request, Expert, ExpertInRequest
+from libs.ODTFile import ODTFile
 from reports.forms import DatePeriodForm
 
 
@@ -127,6 +130,7 @@ def reports_list(request):
         (_('By requested categories'), reverse(categories)),
         (_('By statuses'), reverse(status_counter)),
         (_('By experts'), reverse(by_experts)),
+        (u'Заявления на первую категорию', reverse(first_category)),
     ]
 
     template = loader.get_template("reports/reports_list.html")
@@ -172,5 +176,90 @@ def by_experts(request):
                     experts.setdefault(eir.expert, []).append(request_)
 
     template = loader.get_template("reports/experts.html")
+    c = RequestContext(request, locals())
+    return HttpResponse(template.render(c))
+
+
+@login_required
+def first_category(request):
+    title = u'Отчет по заявлениям на первую категорию'
+    form = DatePeriodForm(initial={"fromdate": datetime.date.today(), "todate": datetime.date.today()})
+    custom_styles = ['smoothness/jquery-ui-1.8.23.custom.css']
+
+    if request.method == "POST":
+        form = DatePeriodForm(request.POST)
+        if form.is_valid():
+            fd = form.cleaned_data['fromdate']
+            td = form.cleaned_data['todate']
+
+            statuses = RequestStatus.objects.filter(is_expertise_results_received=True)
+            flows = RequestFlow.objects.select_related(
+                'request', 'request__territory', 'request__organization', 'request__organization__territory',
+                'request__post'
+            ).filter(
+                status__in=statuses,
+                request__qualification__first=True,
+                date__lte=td + datetime.timedelta(days=1),
+                date__gte=fd
+            )
+
+            by_territory = {}
+            for f in flows:
+                if f.request.territory:
+                    by_territory.setdefault(f.request.territory.name, []).append(f)
+                elif f.request.organization.territory:
+                    by_territory.setdefault(f.request.organization.territory.name, []).append(f)
+
+            expertises = {}
+            for e in ExpertInRequest.objects.all():
+                expertises.setdefault(e.request_id, []).append(e)
+
+            if flows:
+                spreadsheet = ODTFile(os.path.join(settings.MEDIA_ROOT, 'odt', 'first_category.ods'))
+                sheet = spreadsheet.document.getSheets().getByIndex(0)
+                row = 3
+                count = 1
+                for territory in by_territory.keys():
+                    sheet.getCellRangeByPosition(0, row, 7, row).merge(1)
+                    sheet.getCellByPosition(0, row).setString(territory)
+                    row += 1
+                    local_flows = by_territory[territory]
+                    local_flows = sorted(local_flows, key=lambda fl: fl.request.post.name)
+                    for flow in local_flows:
+                        range_ = sheet.getCellRangeByPosition(0, row, 6, row)
+                        r = flow.request
+                        row += 1
+                        fg = sum([e.first_grade or 0 for e in expertises[r.id]])
+                        sg = sum([e.second_grade or 0 for e in expertises[r.id]])
+                        range_.setDataArray(
+                            (
+                                (
+                                    count,
+                                    r.post.name,
+                                    r.fio(),
+                                    r.organization_name or r.organization.name,
+                                    fg,
+                                    sg,
+                                    fg + sg
+                                ),
+                            )
+                        )
+                        count += 1
+
+                file_name = os.path.join(
+                    settings.MEDIA_URL,
+                    'generated',
+                    'first_category_%s_%s.xls' % (fd.strftime('%Y%m%d'), td.strftime('%Y%m%d'))
+                )
+                spreadsheet.save(
+                    os.path.join(
+                        settings.MEDIA_ROOT,
+                        'generated',
+                        'first_category_%s_%s.xls' % (fd.strftime('%Y%m%d'), td.strftime('%Y%m%d'))
+                    ),
+                    file_format='MS Excel 97'
+                )
+
+    template = loader.get_template("reports/first_category.html")
     c = RequestContext(request, locals())
     return HttpResponse(template.render(c))

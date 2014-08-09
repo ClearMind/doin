@@ -7,7 +7,8 @@ from com.sun.star.task import ErrorCodeIOException
 from com.sun.star.beans import PropertyValue
 import string
 
-class ODTFileError:
+
+class ODTFileError(Exception):
     pass
 
 
@@ -16,12 +17,16 @@ class ODTFile():
         self.errors = []
         self.local = uno.getComponentContext()
         self.document = None
-        self.resolver = self.local.ServiceManager.createInstanceWithContext("com.sun.star.bridge.UnoUrlResolver",
-            self.local)
+        self.resolver = self.local.ServiceManager.createInstanceWithContext(
+            "com.sun.star.bridge.UnoUrlResolver",
+            self.local
+        )
         try:
             self.context = self.resolver.resolve("uno:socket,host=localhost,port=2002;urp;StarOffice.ComponentContext")
-            self.desktop = self.context.ServiceManager.createInstanceWithContext("com.sun.star.frame.Desktop",
-                self.context)
+            self.desktop = self.context.ServiceManager.createInstanceWithContext(
+                "com.sun.star.frame.Desktop",
+                self.context
+            )
             try:
                 self.document = self.desktop.loadComponentFromURL(uno.systemPathToFileUrl(filename), "_blank", 0, ())
             except IllegalArgumentException, e:
@@ -31,15 +36,14 @@ class ODTFile():
             self.errors.append('Connect to server error!')
             raise ODTFileError
 
-
-    def save(self, path):
-        outProps = (
-            PropertyValue("FilterName", 0, 'MS Word 97', 0),
+    def save(self, path, file_format='MS Word 97'):
+        properties = (
+            PropertyValue("FilterName", 0, file_format, 0),
             PropertyValue("Overwrite", 0, True, 0))
 
         if self.document:
             try:
-                self.document.storeToURL(uno.systemPathToFileUrl(path), outProps)
+                self.document.storeToURL(uno.systemPathToFileUrl(path), properties)
             except ErrorCodeIOException:
                 self.errors.append("Save file error (may be already open): %s" % path)
                 raise ODTFileError
