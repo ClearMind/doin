@@ -232,8 +232,8 @@ def first_category(request):
                         fg = sum([e.first_grade or 0 for e in expertises[r.id]])
                         sg = sum([e.second_grade or 0 for e in expertises[r.id]])
                         range_.setDataArray(
-                            (
-                                (
+                            (  # row
+                                (  # columns in row
                                     count,
                                     r.post.name,
                                     r.fio(),

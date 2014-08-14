@@ -428,28 +428,54 @@ def save_grades(request):
 
 
 @login_required
-def assign_experts(request, rid):
+def assign_experts(request_, rid):
     try:
         r = Request.objects.get(id=rid)
-        data = request.POST.copy()
+        data = request_.POST.copy()
         experts_pks = data.getlist('experts')
         if len(experts_pks) > 0:
             for eid in experts_pks:
                 expert = Expert.objects.get(id=eid)
                 ExpertInRequest.objects.get_or_create(request=r, expert=expert)
         else:
-            experts_list = list(Expert.objects.filter(not_active=False).annotate(cnt=Count('request')).order_by('cnt'))
+            current_date = datetime.datetime.now()
+            m = current_date.month
+            if 7 <= m <= 12:
+                first_september = datetime.datetime(current_date.year, 9, 1)
+                first_july = datetime.datetime(current_date.year + 1, 7, 1)
+            else:
+                first_september = datetime.datetime(current_date.year - 1, 9, 1)
+                first_july = datetime.datetime(current_date.year, 7, 1)
+
+            year_requests = [
+                f.request for f in RequestFlow.objects.select_related('request').filter(
+                    status__is_in_expertise=True, date__gte=first_september, date__lte=first_july
+                )
+            ]
+            counts = {
+                e[0]: e[1] for e in
+                Expert.objects.filter(
+                    not_active=False,
+                    expertinrequest__request__in=year_requests
+                ).annotate(cnt=Count('request')).values_list('id', 'cnt')
+            }
+            experts_list = list(Expert.objects.order_by('?'))
+            # manual annotation
+            for e in experts_list:
+                e.cnt = counts.get(e.id, 0)
+
             assigned_experts_count = ExpertInRequest.objects.filter(request=r).count()
 
             i = 0
             while assigned_experts_count < 2:
-                expert_in_request, created = ExpertInRequest.objects.get_or_create(
-                    request=r, expert=experts_list[i], defaults={'auto_assigned': True}
-                )
-                i += 1
-                if created:
-                    assigned_experts_count += 1
-
+                expert_ = experts_list[i]
+                if expert_.cnt <= 50:
+                    expert_in_request, created = ExpertInRequest.objects.get_or_create(
+                        request=r, expert=expert_, defaults={'auto_assigned': True}
+                    )
+                    i += 1
+                    if created:
+                        assigned_experts_count += 1
 
     except ObjectDoesNotExist:
         pass
