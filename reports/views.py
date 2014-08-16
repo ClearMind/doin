@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from collections import defaultdict
 import datetime
 from operator import attrgetter
 import os
@@ -162,18 +163,74 @@ def by_experts(request):
             )
 
             experts = {}
-            for eir in ExpertInRequest.objects.select_related('expert', 'request').order_by('request__last_name'):
+            data_array = ()
+            start_position = (0, 3)  # A4
+            number = 1
+            counts = defaultdict(lambda: defaultdict(int))
+
+            for eir in ExpertInRequest.objects.select_related(
+                'expert', 'request', 'request__qualification'
+            ).order_by('expert__last_name', 'request__last_name'):
+                expert_ = eir.expert
                 if eir.request_id in flows:
                     request_ = eir.request
                     if eir.first_grade and eir.second_grade:
-                        request_.count_ = '1, 2'
+                        request_.count_ = 3
+                        if request_.qualification.best:
+                            counts[expert_]['first_best_count_'] += 1
+                            counts[expert_]['second_best_count_'] += 1
+                        if request_.qualification.first:
+                            counts[expert_]['first_first_count_'] += 1
+                            counts[expert_]['second_first_count_'] += 1
                     elif eir.first_grade:
-                        request_.count_ = '1'
+                        request_.count_ = 1
+                        if request_.qualification.best:
+                            counts[expert_]['first_best_count_'] += 1
+                        if request_.qualification.first:
+                            counts[expert_]['first_first_count_'] += 1
                     elif eir.second_grade:
-                        request_.count_ = '2'
+                        request_.count_ = 2
+                        if request_.qualification.best:
+                            counts[expert_]['second_best_count_'] += 1
+                        if request_.qualification.first:
+                            counts[expert_]['second_first_count_'] += 1
                     else:
                         request_.count_ = None
                     experts.setdefault(eir.expert, []).append(request_)
+
+            for expert, requests in experts.items():
+                data_array += (
+                    (
+                        number,
+                        expert.__unicode__(),
+                        ';\n'.join((r.fio() for r in requests if r.qualification.best and r.count_ and r.count_ % 2)),
+                        ';\n'.join((r.fio() for r in requests if r.qualification.best and r.count_ and r.count_ >= 2)),
+                        ';\n'.join((r.fio() for r in requests if r.qualification.first and r.count_ and r.count_ % 2)),
+                        ';\n'.join((r.fio() for r in requests if r.qualification.first and r.count_ and r.count_ >= 2)),
+                        counts[expert]['first_best_count_'],
+                        counts[expert]['second_best_count_'],
+                        counts[expert]['first_first_count_'],
+                        counts[expert]['second_first_count_']
+                    ),
+                )
+                number += 1
+
+            spreadsheet = ODTFile(os.path.join(settings.MEDIA_ROOT, 'odt', 'experts.ods'))
+            spreadsheet.fill_spreadsheet(start_position, data_array)
+
+            file_name = os.path.join(
+                settings.MEDIA_URL,
+                'generated',
+                'experts_%s_%s.xls' % (fd.strftime('%Y%m%d'), td.strftime('%Y%m%d'))
+            )
+            spreadsheet.save(
+                os.path.join(
+                    settings.MEDIA_ROOT,
+                    'generated',
+                    'experts_%s_%s.xls' % (fd.strftime('%Y%m%d'), td.strftime('%Y%m%d'))
+                ),
+                file_format='MS Excel 97'
+            )
 
     template = loader.get_template("reports/experts.html")
     c = RequestContext(request, locals())

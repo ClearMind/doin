@@ -40,34 +40,6 @@
                 </tr>
             </table>
         </form>
-        {% if experts %}
-            <h2>Отчет</h2>
-            <table class="experts">
-                <thead>
-                <tr>
-                    <th>Эксперт</th>
-                    <th>Количество заявлений</th>
-                    <th>Аттестуемые</th>
-                </tr>
-                </thead>
-                <tbody>
-                    {% for expert, requests in experts.items %}
-                    <tr>
-                        <td title="{{ expert.pk }}">{{ expert }}</td>
-                        <td>{{ requests|length }}</td>
-                        <td>
-                        {% spaceless %}
-                        <ul>
-                            {% for r in requests %}
-                                <li title="{{ r.pk }}">{{ r.fio }} {% if r.count_ %}<span title="этап">({{ r.count_ }})</span>{% endif %};</li>
-                            {% endfor %}
-                        </ul>
-                        {% endspaceless %}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        {% endif %}
+        <iframe src="{{ file_name }}" frameborder="0"></iframe>
     </div>
 {% endblock %}

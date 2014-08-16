@@ -70,3 +70,14 @@ class ODTFile():
                 self.replace("$pekfjgyt", end)
             else:
                 self.replace("$%s" % find, replace)
+
+    def fill_spreadsheet(self, start_cell_position, data_array):
+        sheet = self.document.getSheets().getByIndex(0)
+        range_ = sheet.getCellRangeByPosition(
+            start_cell_position[0],  # x
+            start_cell_position[1],  # y
+            start_cell_position[0] + len(data_array[0]) - 1,  # columns count
+            start_cell_position[1] + len(data_array) - 1,     # rows count
+        )
+
+        range_.setDataArray(data_array)
