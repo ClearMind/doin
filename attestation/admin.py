@@ -43,7 +43,7 @@ class MemberAdmin(admin.ModelAdmin):
     ]
 
 
-class CommissianAdmin(admin.ModelAdmin):
+class CommissionAdmin(admin.ModelAdmin):
     list_display = ('name', 'creation_date', 'expiration_date')
     list_display_links = ('name', 'creation_date', 'expiration_date')
     filter_horizontal = ['members']
@@ -59,17 +59,7 @@ site.register(Organization)
 site.register(RequestStatus)
 site.register(Expert, ExpertAdmin)
 site.register(Config, ConfigAdmin)
-site.register(CertifyingCommission, CommissianAdmin)
+site.register(CertifyingCommission, CommissionAdmin)
 site.register(CertifyingCommissionMember, MemberAdmin)
 site.register(Area)
 site.register(Achievement)
-
-#class IndicatorInline(admin.TabularInline):
-#    model = Indicator
-
-#class CriterionAdmin(admin.ModelAdmin):
-#    list_display = ('text', )
-#
-#    inlines = [IndicatorInline, ]
-#
-#site.register(Criterion, CriterionAdmin)

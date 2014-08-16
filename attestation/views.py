@@ -430,7 +430,8 @@ def save_grades(request):
 @login_required
 def assign_experts(request_, rid):
     try:
-        r = Request.objects.get(id=rid)
+        r = Request.objects.select_related('territory', 'organization').get(id=rid)
+        territory = r.territory or r.organization.territory
         data = request_.POST.copy()
         experts_pks = data.getlist('experts')
         if len(experts_pks) > 0:
@@ -459,7 +460,7 @@ def assign_experts(request_, rid):
                     expertinrequest__request__in=year_requests
                 ).annotate(cnt=Count('request')).values_list('id', 'cnt')
             }
-            experts_list = list(Expert.objects.order_by('?'))
+            experts_list = list(Expert.objects.exclude(territory=territory).order_by('?'))
             # manual annotation
             for e in experts_list:
                 e.cnt = counts.get(e.id, 0)
