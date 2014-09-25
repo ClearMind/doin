@@ -23,7 +23,7 @@ def territories(request):
 
     requests = Request.objects.select_related(
         'status', 'qualification', 'territory', 'organization__territory', 'organization', 'with_qualification', 'post'
-    ).filter(status__is_done=False)
+    ).filter(status__is_done=False, status__is_rejected=False, status__is_fail=False)
 
     by_territory = {}
     for r in requests:
@@ -59,7 +59,7 @@ def categories(request):
 
     requests = Request.objects.select_related(
         'status', 'qualification', 'territory', 'organization__territory', 'organization', 'with_qualification', 'post'
-    ).filter(status__is_done=False)
+    ).filter(status__is_done=False, status__is_rejected=False, status__is_fail=False)
     categories_ = Qualification.objects.exclude(for_confirmation=True)
 
     by_category = {}

@@ -28,7 +28,7 @@
                             {% if forloop.first %}
                                 <td rowspan="{{ reqs|length }}">{{ ter }}</td>
                             {% endif %}
-                            <td>{{ r.fio }}</td>
+                            <td title="{{ r.id }}">{{ r.fio }}</td>
                             <td>{{ r.post }}</td>
                             <td>{{ r.organization.name }}{{ r.organization_name }}</td>
                             <td>
