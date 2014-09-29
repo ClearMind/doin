@@ -430,11 +430,12 @@ def status_changed_slot(sender, **kwargs):
     txt_template = get_template('mail/%s/status_changed.txt' % lc)
     html_template = get_template('mail/%s/status_changed.html' % lc)
     c = {
-        'rf': inst
+        'rf': inst,
+        'to_date': datetime.date.today() + datetime.timedelta(days=16)
     }
 
     msg = EmailMultiAlternatives(_('Status of your request has been changed'), txt_template.render(Context(c)),
-                                 'tln@doinhmao.ru', [inst.request.email])
+                                 'hdi@doinhmao.ru', [inst.request.email])
     msg.attach_alternative(html_template.render(Context(c)), 'text/html')
     msg.send(fail_silently=not DEBUG)
 
@@ -455,7 +456,7 @@ def expert_assigned_slot(sender, **kwargs):
     c = {"eir": inst}
 
     msg = EmailMultiAlternatives(_('You assigned to expertise'), txt_template.render(Context(c)),
-                                 'tln@doinhmao.ru', [inst.expert.email])
+                                 'hdi@doinhmao.ru', [inst.expert.email])
     msg.attach_alternative(html_template.render(Context(c)), 'text/html')
     msg.send(fail_silently=not DEBUG)
 
@@ -476,7 +477,7 @@ def comment_added_slot(sender, **kwargs):
     c = {"comment": inst}
 
     msg = EmailMultiAlternatives(_('New comment'), txt_template.render(Context(c)),
-                                 'tln@doinhmao.ru', [inst.request.email])
+                                 'hdi@doinhmao.ru', [inst.request.email])
     msg.attach_alternative(html_template.render(Context(c)), 'text/html')
     msg.send(fail_silently=not DEBUG)
 

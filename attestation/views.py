@@ -470,7 +470,7 @@ def assign_experts(request_, rid):
             i = 0
             while assigned_experts_count < 2:
                 expert_ = experts_list[i]
-                if expert_.cnt <= 50:
+                if expert_.cnt <= 30:
                     expert_in_request, created = ExpertInRequest.objects.get_or_create(
                         request=r, expert=expert_, defaults={'auto_assigned': True}
                     )
@@ -600,13 +600,11 @@ def requests(request):
     custom_scripts = ['libs/jquery.dataTables.min.js']
     custom_styles = ['jquery.dataTables.css']
 
-    statuses = RequestStatus.objects.filter(is_done=False)
-
     reqs = {}
     requests_ = Request.objects.select_related(
         'territory', 'organization', 'status', 'qualification',
         'with_qualification', 'post'
-    ).filter(status__in=statuses)
+    ).filter(status__is_done=False, qualification__for_confirmation=False)
 
     for r in requests_:
         reqs.setdefault(r.status, []).append(r)
