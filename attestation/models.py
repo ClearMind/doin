@@ -290,6 +290,8 @@ class Request(models.Model):
     order_date = models.DateField(verbose_name=_('order date'), null=True, blank=True)
     order_number = models.IntegerField(verbose_name=_('order number'), null=True, blank=True)
 
+    doc_date = models.DateField(verbose_name=u'Дата получения документов', null=True, blank=True, default=None)
+
     status = models.ForeignKey(RequestStatus, blank=True, null=True)
 
     def save(self, force_insert=False, force_update=False, using=None):

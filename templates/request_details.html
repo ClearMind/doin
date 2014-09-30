@@ -61,6 +61,18 @@
             {% csrf_token %}
             <table>
                 <tr class="caption">
+                    <td colspan="2">Отметка о получении документов</td>
+                </tr>
+                <tr>
+                    <td><label for="documents">Все документы предоставлены</label></td>
+                    <td>
+                        <input type="checkbox" id="documents" name="documents"/>
+                        {% if req.doc_date %}
+                            <span>(текущая дата получения документов {{ req.doc_date|date:"d.m.Y" }})</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr class="caption">
                     <td colspan="2">Добавить следующий этап движения заявления</td>
                 </tr>
                 <tr>

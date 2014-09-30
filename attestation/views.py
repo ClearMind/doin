@@ -318,10 +318,10 @@ def request_details(request, rid):
 
 
 @login_required
-def set_current_status(request, rid):
+def set_current_status(request_, rid):
     req = get_object_or_404(Request, id=rid)
-    if request.method == 'POST':
-        data = request.POST.copy()
+    if request_.method == 'POST':
+        data = request_.POST.copy()
         last_flow = req.requestflow_set.order_by('-date')[0]
         if 0 < data.get('set_status', -1) != last_flow.status.pk:
             try:
@@ -340,6 +340,10 @@ def set_current_status(request, rid):
                 req.save()
             except ObjectDoesNotExist:
                 pass
+
+        if data.get('documents', None):
+            req.doc_date = datetime.date.today()
+            req.save()
 
     return HttpResponseRedirect(reverse('attestation.views.request_details', args=[rid]))
 
