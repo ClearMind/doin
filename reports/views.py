@@ -252,13 +252,14 @@ def first_category(request):
             statuses = RequestStatus.objects.filter(is_expertise_results_received=True)
             flows = RequestFlow.objects.select_related(
                 'request', 'request__territory', 'request__organization', 'request__organization__territory',
-                'request__post'
+                'request__post', 'request__status'
             ).filter(
                 status__in=statuses,
                 request__qualification__first=True,
                 date__lte=td + datetime.timedelta(days=1),
                 date__gte=fd
             )
+            flows = filter(lambda f_: f_.request.status.is_expertise_results_received, flows)
 
             by_territory = {}
             for f in flows:
@@ -281,7 +282,7 @@ def first_category(request):
                     sheet.getCellByPosition(0, row).setString(territory)
                     row += 1
                     local_flows = by_territory[territory]
-                    local_flows = sorted(local_flows, key=lambda fl: fl.request.post.name)
+                    local_flows = sorted(local_flows, key=lambda fl: (fl.request.post.name, fl.request.last_name))
                     for flow in local_flows:
                         range_ = sheet.getCellRangeByPosition(0, row, 6, row)
                         r = flow.request

@@ -81,6 +81,9 @@ def request_form(request):
             r.trainings = tr.strip()
 
             r.phone = data.get('phone')
+
+            if data.get('simple_doc'):
+                r.doc_for_simple = data['simple_doc']
             r.save()
 
             r.degrees.clear()
@@ -144,7 +147,7 @@ def request_form(request):
                             "results": r.results,
                             "trainings": r.trainings, "phone": r.phone, 'birth_date': r.birth_date,
                             "achievements": r.achievements.all(), "post_date": r.post_date, "genitive": r.genitive,
-                            "discipline": r.discipline}
+                            "discipline": r.discipline, 'simple_doc': r.doc_for_simple}
 
                     educations = Education.objects.filter(request=r)
                     if educations:

@@ -375,6 +375,17 @@
     </tr>
 
     <tr class="caption">
+        <td colspan="3">Упрощенная процедура прохождения аттестации</td>
+    </tr>
+    <tr>
+        <td class="label">{{ form.simple_doc.label_tag }}<br/>
+            <span class="help">Если у Вас есть документ дающий право на прохождение аттестации по упрощенной процедуре,
+            то укажите его реквизиты в данном поле</span>
+        </td>
+        <td {% if form.simple_doc.field.required %}class="required"{% endif %} colspan="2">{{ form.simple_doc }}</td>
+    </tr>
+
+    <tr class="caption">
         <td colspan="3">{% trans "Additional data" %}</td>
     </tr>
     {% if form.degrees.errors %}

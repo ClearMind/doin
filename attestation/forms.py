@@ -63,6 +63,8 @@ class RequestForm(forms.Form):
         max_length=512, widget=forms.Textarea(attrs={"rows": 5, "cols": 80}))
     results = forms.CharField(widget=forms.Textarea(attrs={"rows": 8, "cols": 80, 'maxlength': 1200}),
         label=_('Results'))
+    simple_doc = forms.CharField(widget=forms.Textarea(attrs={"rows": 4, "cols": 80, 'maxlength': 256}),
+                                 label=u'Документ', required=False)
 
     def clean(self):
         cleaned_data = self.cleaned_data

@@ -291,8 +291,14 @@ class Request(models.Model):
     order_number = models.IntegerField(verbose_name=_('order number'), null=True, blank=True)
 
     doc_date = models.DateField(verbose_name=u'Дата получения документов', null=True, blank=True, default=None)
+    doc_for_simple = models.CharField(max_length=256, verbose_name=u'Документ на право прохождение аттестации по УП',
+                                      null=True, blank=True, default=None)
 
     status = models.ForeignKey(RequestStatus, blank=True, null=True)
+
+    @property
+    def is_simple(self):
+        return bool(self.doc_for_simple)
 
     def save(self, force_insert=False, force_update=False, using=None):
         if not self.secret_code:
