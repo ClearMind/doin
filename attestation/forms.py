@@ -3,6 +3,7 @@ from django import forms
 from attestation.models import *
 from django.utils.translation import ugettext_lazy as _, ugettext
 
+
 class RequestForm(forms.Form):
     first_name = forms.CharField(max_length=32, label=_('First name'), required=True)
     last_name = forms.CharField(max_length=32, label=_('Last name'))
@@ -11,6 +12,7 @@ class RequestForm(forms.Form):
     birth_date = forms.DateField(label=_('Birth date'))
     post_date = forms.DateField(label=_('Appointment date'))
     email = forms.EmailField(required=True, label=_('E-Mail'))
+    official_email = forms.EmailField(required=True, label=u'E-Mail организации')
     phone = forms.CharField(required=False, label=_('Phone'), max_length=12)
     post = forms.ModelChoiceField(queryset=Post.objects.all(), label=_('Post'))
     discipline = forms.CharField(required=False, label=_('Discipline'), max_length=64)
@@ -19,50 +21,50 @@ class RequestForm(forms.Form):
     territory = forms.ModelChoiceField(queryset=Territory.objects.all(), label=_('Territory'), required=False)
     # or
     organization = forms.ModelChoiceField(queryset=Organization.objects.all(), label=_('Child organization'),
-        required=False)
+                                          required=False)
 
     organization_name = forms.CharField(max_length=512, label=_('Organization name'), required=False,
-        widget=forms.Textarea(attrs={'rows': 5, 'cols': 80}))
+                                        widget=forms.Textarea(attrs={'rows': 5, 'cols': 80}))
 
     with_qualification = forms.ModelChoiceField(queryset=Qualification.objects.exclude(for_confirmation=True),
-        label=_('With qualification'), required=False, empty_label='не имею')
+                                                label=_('With qualification'), required=False, empty_label='не имею')
     expiration_date = forms.DateField(label=_('Expiration date'), required=False)
     organization_experience = forms.IntegerField(label=_('Experience in organization'))
     post_experience = forms.IntegerField(label=_('Experience in post'))
 
     # first education
     edu_institution = forms.CharField(max_length=512, label=_('Educational institution'),
-        widget=forms.Textarea(attrs={"rows": 3, "cols": 80}))
+                                      widget=forms.Textarea(attrs={"rows": 3, "cols": 80}))
     edu_speciality = forms.CharField(max_length=128, label=_('Speciality'))
     edu_qualification = forms.CharField(max_length=128, label=_('Qualification'))
     edu_diploma_year = forms.IntegerField(label=_('Diploma year'))
 
     # second education
     edu_institution2 = forms.CharField(max_length=512, label=_('Educational institution'), required=False,
-        widget=forms.Textarea(attrs={"rows": 3, "cols": 80}))
+                                       widget=forms.Textarea(attrs={"rows": 3, "cols": 80}))
     edu_speciality2 = forms.CharField(max_length=128, label=_('Speciality'), required=False)
     edu_qualification2 = forms.CharField(max_length=128, label=_('Qualification'), required=False)
     edu_diploma_year2 = forms.IntegerField(label=_('Diploma year'),
-        required=False)
+                                           required=False)
 
-    #additional info
+    # additional info
     degrees = forms.ModelMultipleChoiceField(queryset=Degree.objects.all(), label=_('Degree'),
-        required=False)
+                                             required=False)
     academic_title = forms.ModelChoiceField(queryset=AcademicTitle.objects.all(), label=_('Academic title'),
-        required=False)
+                                            required=False)
 
     achievements = forms.ModelMultipleChoiceField(queryset=Achievement.objects.all(),
-        label=_('Achievements and titles'), required=False)
+                                                  label=_('Achievements and titles'), required=False)
 
     qualification = forms.ModelChoiceField(queryset=Qualification.objects.filter(is_active=True),
-        label=_('Qualification category'))
+                                           label=_('Qualification category'))
     presence = forms.BooleanField(label=_('Presence'), required=False)
     experience = forms.IntegerField(label=_('Experience'))
     ped_experience = forms.IntegerField(label=_('Pedagogical experience'))
     trainings = forms.CharField(label=_('Trainings'), required=False,
-        max_length=512, widget=forms.Textarea(attrs={"rows": 5, "cols": 80}))
+                                max_length=512, widget=forms.Textarea(attrs={"rows": 5, "cols": 80}))
     results = forms.CharField(widget=forms.Textarea(attrs={"rows": 8, "cols": 80, 'maxlength': 1200}),
-        label=_('Results'))
+                              label=_('Results'))
     simple_doc = forms.CharField(widget=forms.Textarea(attrs={"rows": 4, "cols": 80, 'maxlength': 256}),
                                  label=u'Документ', required=False)
 

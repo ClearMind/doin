@@ -613,6 +613,11 @@ def requests(request):
         'with_qualification', 'post'
     ).filter(status__is_done=False, qualification__for_confirmation=False)
 
+    if request.GET.get('simple'):
+        requests_ = requests_.filter(doc_for_simple__isnull=False)
+    else:
+        requests_ = requests_.filter(doc_for_simple__isnull=True)
+
     for r in requests_:
         reqs.setdefault(r.status, []).append(r)
 

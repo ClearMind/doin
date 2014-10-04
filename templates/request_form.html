@@ -107,7 +107,17 @@
     <tr>
         <td class="label">{{ form.email.label_tag }}</td>
         <td {% if form.email.field.required %}class="required"{% endif %}>{{ form.email }}</td>
-        <td class="help">Введите адрес электронной почты (личный или образовательного учреждения)</td>
+        <td class="help">Введите личный адрес электронной почты</td>
+    </tr>
+    {% if form.official_email.errors %}
+        <tr>
+            <td colspan="3" class="error">{{ form.official_email.errors }}</td>
+        </tr>
+    {% endif %}
+    <tr>
+        <td class="label">{{ form.official_email.label_tag }}</td>
+        <td {% if form.official_email.field.required %}class="required"{% endif %}>{{ form.official_email }}</td>
+        <td class="help">Введите официальный адрес электронной почты образовательного учреждения</td>
     </tr>
     {% if form.phone.errors %}
         <tr>

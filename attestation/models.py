@@ -274,6 +274,7 @@ class Request(models.Model):
     academic_title = models.ForeignKey(AcademicTitle, verbose_name=_('academic title'), blank=True, null=True)
     presence = models.BooleanField(default=False, verbose_name=_('with personal presence'))
     email = models.EmailField(verbose_name=_('email'))
+    official_email = models.EmailField(verbose_name=_('email'), null=True, blank=True, default=None)
     trainings = models.TextField(verbose_name=_('trainings'))
     experts = models.ManyToManyField(Expert, through='ExpertInRequest')
     phone = models.CharField(max_length=12, verbose_name=_('phone'), null=True, blank=True)

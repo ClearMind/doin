@@ -69,8 +69,8 @@
         <h2>Заявление</h2>
         <p>
             Прошу аттестовать меня в {{ year }} году на <span class="data">{{ r.qualification.request_form }}</span>
-            {% if not r.qualification.for_confirmation %}
-                квалификационную категорию
+            квалификационную категорию {% if r.doc_for_simple %}
+            по упрощенной процедуре ({{ r.doc_for_simple }})
             {% endif %}
             по должности <span class="data">{{ r.post }}</span>.
         </p>

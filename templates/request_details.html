@@ -20,13 +20,20 @@
                 {% if req.discipline %}{{ req.discipline }}{% endif %}
                 {{ req.territory|not_empty:"," }}
                 {{ req.organization|not_empty:"," }}
-                {{ req.organization_name|not_empty:"" }}
+                {{ req.organization_name|not_empty:"," }}
+                {{ req.official_email|not_empty:"" }}
             </td>
         </tr>
         <tr>
             <th>Заявляемая категория</th>
             <td>{{ req.qualification }}</td>
         </tr>
+        {% if req.doc_for_simple %}
+        <tr>
+            <th>По упрощенной процедуре</th>
+            <td>на основании: {{ req.doc_for_simple }}</td>
+        </tr>
+        {% endif %}
         <tr>
             <th>Текущий статус заявления</th>
             <td><strong>{{ req.status }}</strong></td>
