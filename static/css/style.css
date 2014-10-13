@@ -568,3 +568,15 @@ body#report {
 .dataTables_filter {
     margin: 7px;
 }
+
+.request {
+    position: relative;
+}
+
+.watermark {
+    position: absolute;
+    top: 2cm;
+    left: 3cm;
+    color: red;
+    font-size: 32px;
+}

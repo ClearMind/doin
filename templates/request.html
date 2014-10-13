@@ -15,7 +15,9 @@
     {% endif %}
 
     <div class="request">
-
+    {% if not r.requestflow_set.all %}
+        <p class="watermark">Заявление<br/>не<br/>зарегистрировано!</p>
+    {% endif %}
     <table class="align-right">
         <tr>
             <td class="half">
