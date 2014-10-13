@@ -8,5 +8,6 @@ urlpatterns = patterns(
     url(r'^count/by/statuses/$', "status_counter"),
     url(r'^by/experts/$', "by_experts"),
     url(r'^first_category/$', "first_category"),
+    url(r'^best_category/$', "best_category"),
     url(r'^list/$', 'reports_list'),
 )

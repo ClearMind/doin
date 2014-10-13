@@ -444,7 +444,7 @@ def status_changed_slot(sender, **kwargs):
     }
 
     msg = EmailMultiAlternatives(_('Status of your request has been changed'), txt_template.render(Context(c)),
-                                 'hdi@doinhmao.ru', [inst.request.email])
+                                 'att@iro86.ru', [inst.request.email])
     msg.attach_alternative(html_template.render(Context(c)), 'text/html')
     msg.send(fail_silently=not DEBUG)
 
@@ -465,7 +465,7 @@ def expert_assigned_slot(sender, **kwargs):
     c = {"eir": inst}
 
     msg = EmailMultiAlternatives(_('You assigned to expertise'), txt_template.render(Context(c)),
-                                 'hdi@doinhmao.ru', [inst.expert.email])
+                                 'att@iro86.ruu', [inst.expert.email])
     msg.attach_alternative(html_template.render(Context(c)), 'text/html')
     msg.send(fail_silently=not DEBUG)
 
@@ -486,7 +486,7 @@ def comment_added_slot(sender, **kwargs):
     c = {"comment": inst}
 
     msg = EmailMultiAlternatives(_('New comment'), txt_template.render(Context(c)),
-                                 'hdi@doinhmao.ru', [inst.request.email])
+                                 'att@iro86.ru', [inst.request.email])
     msg.attach_alternative(html_template.render(Context(c)), 'text/html')
     msg.send(fail_silently=not DEBUG)
 
