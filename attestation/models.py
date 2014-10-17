@@ -8,8 +8,16 @@ from django.db.models.signals import post_save
 from django.template import Context
 from django.template.loader import get_template
 from django.utils.translation import ugettext_lazy as _
+import re
 
 from settings import DEBUG, LANGUAGE_CODE
+
+OTYPES = (
+    ('professional', u'профессиональное'),
+    ('common', u'общеобразовательное'),
+    ('preschool', u'дошколное'),
+    ('additional', u'дополнительное')
+)
 
 
 class Achievement(models.Model):
@@ -151,6 +159,10 @@ class Expert(models.Model):
     email = models.EmailField(verbose_name=_('email'), blank=True, null=True)
     area = models.ForeignKey(Area, verbose_name=_('educational area'))
     not_active = models.BooleanField(verbose_name=u'Не активен', default=False)
+
+    organization_type = models.CharField(
+        max_length=32, blank=True, null=True, choices=OTYPES, verbose_name=u'направление сертификации'
+    )
 
     def __unicode__(self):
         return '%s %s.%s.' % (self.last_name, self.first_name[0], self.middle_name[0])
@@ -296,6 +308,10 @@ class Request(models.Model):
                                       null=True, blank=True, default=None)
 
     status = models.ForeignKey(RequestStatus, blank=True, null=True)
+
+    organization_type = models.CharField(
+        max_length=32, blank=True, null=True, choices=OTYPES, verbose_name=u'направление сертификации'
+    )
 
     @property
     def is_simple(self):

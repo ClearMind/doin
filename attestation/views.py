@@ -4,6 +4,7 @@ from operator import attrgetter
 import os
 from datetime import date, timedelta
 import datetime
+from random import randint
 
 from django.contrib.auth.decorators import login_required
 from django.db.models import Max, Count
@@ -438,7 +439,6 @@ def save_grades(request):
 def assign_experts(request_, rid):
     try:
         r = Request.objects.select_related('territory', 'organization').get(id=rid)
-        territory = r.territory or r.organization.territory
         data = request_.POST.copy()
         experts_pks = data.getlist('experts')
         if len(experts_pks) > 0:
@@ -467,15 +467,20 @@ def assign_experts(request_, rid):
                     expertinrequest__request__in=year_requests
                 ).annotate(cnt=Count('request')).values_list('id', 'cnt')
             }
-            experts_list = list(Expert.objects.exclude(territory=territory).order_by('?'))
+            experts_list = list(Expert.objects.filter(
+                organization_type=r.organization_type, organization_type__isnull=False
+            ))
+
             # manual annotation
             for e in experts_list:
                 e.cnt = counts.get(e.id, 0)
 
+            experts_list = sorted(experts_list, key=lambda e_: (e_.cnt, randint(0, 1000)), reverse=True)
+
             assigned_experts_count = ExpertInRequest.objects.filter(request=r).count()
 
             i = 0
-            while assigned_experts_count < 2:
+            while assigned_experts_count < 1:
                 expert_ = experts_list[i]
                 if expert_.cnt <= 30:
                     expert_in_request, created = ExpertInRequest.objects.get_or_create(

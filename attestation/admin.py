@@ -6,7 +6,7 @@ from attestation.models import *
 class ExpertAdmin(admin.ModelAdmin):
     list_display = ('last_name', 'first_name', 'middle_name', 'territory', 'area', 'not_active')
     list_display_links = ('first_name', 'last_name', 'middle_name')
-    list_filter = ('area',)
+    list_filter = ('organization_type', 'area')
     search_fields = ('last_name', )
     list_editable = ['not_active']
     fields = [
@@ -15,6 +15,7 @@ class ExpertAdmin(admin.ModelAdmin):
         'middle_name',
         'post',
         'organization',
+        'organization_type',
         'territory',
         'email',
         'area',
