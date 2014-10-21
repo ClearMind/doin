@@ -8,13 +8,15 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
+from django.db.models import Q
 from django.http import HttpResponse
 from django.template import loader, RequestContext
 from django.utils.translation import ugettext_lazy as _
 
 from attestation.models import RequestFlow, Territory, Qualification, RequestStatus, Request, Expert, ExpertInRequest
 from libs.ODTFile import ODTFile
-from reports.forms import DatePeriodForm
+from reports.forms import DatePeriodForm, QuarterForm
+from itertools import groupby
 
 
 @login_required
@@ -133,6 +135,7 @@ def reports_list(request):
         (_('By experts'), reverse(by_experts)),
         (u'Заявления на первую категорию', reverse(first_category)),
         (u'Заявления на высшую категорию', reverse(best_category)),
+        (u'Квартальный отчет', reverse(quarter)),
     ]
 
     template = loader.get_template("reports/reports_list.html")
@@ -175,6 +178,8 @@ def by_experts(request):
                 expert_ = eir.expert
                 if eir.request_id in flows:
                     request_ = eir.request
+                    if request_.doc_for_simple:
+                        counts[expert_]['simple'] += 1
                     if eir.first_grade and eir.second_grade:
                         request_.count_ = 3
                         if request_.qualification.best:
@@ -199,7 +204,7 @@ def by_experts(request):
                         request_.count_ = None
                     experts.setdefault(eir.expert, []).append(request_)
 
-            for expert, requests in experts.items():
+            for expert, requests in sorted(experts.items(), key=lambda (e, r): e.__unicode__()):
                 data_array += (
                     (
                         number,
@@ -208,10 +213,12 @@ def by_experts(request):
                         ';\n'.join((r.fio() for r in requests if r.qualification.best and r.count_ and r.count_ >= 2)),
                         ';\n'.join((r.fio() for r in requests if r.qualification.first and r.count_ and r.count_ % 2)),
                         ';\n'.join((r.fio() for r in requests if r.qualification.first and r.count_ and r.count_ >= 2)),
+                        ';\n'.join((r.fio() for r in requests if r.doc_for_simple)),
                         counts[expert]['first_best_count_'],
                         counts[expert]['second_best_count_'],
                         counts[expert]['first_first_count_'],
-                        counts[expert]['second_first_count_']
+                        counts[expert]['second_first_count_'],
+                        counts[expert]['simple']
                     ),
                 )
                 number += 1
@@ -415,5 +422,97 @@ def best_category(request):
                 )
 
     template = loader.get_template("reports/best_category.html")
+    c = RequestContext(request, locals())
+    return HttpResponse(template.render(c))
+
+
+def quarter(request):
+    title = u'Квартальный отчет'
+    form = QuarterForm(initial={"quarter": 'I', "year": datetime.date.today().year})
+
+    borders = {
+        'I': (datetime.datetime(2014, 1, 1, 0), datetime.datetime(2014, 3, 31, 0)),
+        'II': (datetime.datetime(2014, 4, 1, 0), datetime.datetime(2014, 6, 30, 0)),
+        'III': (datetime.datetime(2014, 7, 1, 0), datetime.datetime(2014, 9, 30, 0)),
+        'IV': (datetime.datetime(2014, 10, 1, 0), datetime.datetime(2014, 12, 31, 0))
+    }
+
+    if request.method == 'POST':
+        form = QuarterForm(request.POST)
+        if form.is_valid():
+            for k, v in borders.items():
+                borders[k] = (
+                    v[0].replace(year=form.cleaned_data['year']),
+                    v[1].replace(year=form.cleaned_data['year'])
+                )
+
+            from_date, to_date = borders[form.cleaned_data['quarter']]
+
+            flows = RequestFlow.objects.select_related('request', 'request__qualification').filter(
+                date__gte=from_date,
+                date__lte=to_date,
+                request__qualification__for_confirmation=False,
+            ).filter(
+                (Q(request__status__is_done=True) | Q(request__status__is_fail=True)) &
+                (Q(status__is_done=True) | Q(status__is_fail=True))
+            ).order_by('request__order_number')
+
+            by_order = {k: list(v) for k, v in groupby(
+                flows, key=lambda f_: (f_.request.order_number, f_.request.order_date)
+            )}
+
+            spreadsheet = ODTFile(os.path.join(settings.MEDIA_ROOT, 'odt', 'quarter.ods'))
+            sheet = spreadsheet.document.getSheets().getByIndex(0)
+
+            # sub sub titles
+            for r in range(5, 103, 12):
+                sheet.getCellByPosition(0, r).setString(u'Отчет за %s квартал %s года' % (
+                    form.cleaned_data['quarter'],
+                    form.cleaned_data['year']
+                ))
+
+            # сводный
+            start = (0, 7)
+            array = ()
+            for order, flws in by_order.items():
+                if not all(order):
+                    continue
+                array += (
+                    (
+                        u'Приказ Департамента от %s № %s' % (order[1].strftime('%d.%m.%Y'), order[0]),
+                        len([1 for f in flws if f.status.is_done and f.request.qualification.first]),
+                        len([1 for f in flws if f.status.is_done and f.request.qualification.best]),
+                        len([1 for f in flws if f.status.is_fail and f.request.qualification.first]),
+                        len([1 for f in flws if f.status.is_fail and f.request.qualification.best]),
+                        len([1 for f in flws if f.status.is_done])
+                    ),
+                )
+
+            range_ = sheet.getCellRangeByPosition(
+                start[0], start[1], start[0] + len(array[0]) - 1, start[1] + len(array) - 1
+            )
+            range_.setDataArray(array)
+
+            file_name = os.path.join(
+                settings.MEDIA_URL,
+                'generated',
+                'quarter_%s_%s.xls' % (
+                    form.cleaned_data['quarter'],
+                    form.cleaned_data['year']
+                )
+            )
+            spreadsheet.save(
+                os.path.join(
+                    settings.MEDIA_ROOT,
+                    'generated',
+                    'quarter_%s_%s.xls' % (
+                        form.cleaned_data['quarter'],
+                        form.cleaned_data['year']
+                    )
+                ),
+                file_format='MS Excel 97'
+            )
+
+    template = loader.get_template("reports/quarter.html")
     c = RequestContext(request, locals())
     return HttpResponse(template.render(c))

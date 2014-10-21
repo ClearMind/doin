@@ -21,8 +21,12 @@
                 {{ req.territory|not_empty:"," }}
                 {{ req.organization|not_empty:"," }}
                 {{ req.organization_name|not_empty:"," }}
-                {{ req.official_email|not_empty:"" }}
+                {{ req.official_email|not_empty:";" }}
             </td>
+        </tr>
+        <tr>
+            <th>Направление сертификации</th>
+            <td>{{ req.get_organization_type_display|default_if_none:"Не указано" }}</td>
         </tr>
         <tr>
             <th>Заявляемая категория</th>

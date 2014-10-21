@@ -179,6 +179,19 @@
         <td class="help">Выберите из списка подведомственную организацию</td>
     </tr>
 
+    {% if form.organization_type.errors %}
+        <tr>
+            <td colspan="3" class="error">{{ form.organization_type.errors }}</td>
+        </tr>
+    {% endif %}
+    <tr>
+        <td class="label">{{ form.organization_type.label_tag }}</td>
+        <td class="required">{{ form.organization_type }}</td>
+        <td class="help">Выберите из списка направление деятельности в соответствии с реализуемой Вами
+        образовательной программой. Влияет на специализацию назначаемого эксперта.
+        </td>
+    </tr>
+
     {% if form.post.errors %}
         <tr>
             <td colspan="3" class="error">{{ form.post.errors }}</td>

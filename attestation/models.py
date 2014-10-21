@@ -13,10 +13,14 @@ import re
 from settings import DEBUG, LANGUAGE_CODE
 
 OTYPES = (
-    ('professional', u'профессиональное'),
     ('common', u'общеобразовательное'),
+    ('professional', u'профессиональное'),
     ('preschool', u'дошколное'),
-    ('additional', u'дополнительное')
+    ('additional', u'дополнительное'),
+    ('social', u'соц. защита'),
+    ('cultural', u'культура'),
+    ('correction', u'коррекционное'),
+    ('sport', u'спортивное')
 )
 
 

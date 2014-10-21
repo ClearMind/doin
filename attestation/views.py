@@ -56,6 +56,7 @@ def request_form(request):
             r.birth_date = data.get('birth_date')
 
             r.email = data.get('email')
+            r.official_email = data.get('official_email')
             r.post = data.get('post')
             r.discipline = data.get('discipline')
             r.post_date = data.get('post_date')
@@ -72,6 +73,7 @@ def request_form(request):
             r.experience = data.get('experience')
             r.pedagogical_experience = data.get('ped_experience')
             r.genitive = data.get('genitive')
+            r.organization_type = data.get('organization_type')
             res = data.get('results')
             if res[-1] == '.':
                 res = res[0:-1]
@@ -148,7 +150,8 @@ def request_form(request):
                             "results": r.results,
                             "trainings": r.trainings, "phone": r.phone, 'birth_date': r.birth_date,
                             "achievements": r.achievements.all(), "post_date": r.post_date, "genitive": r.genitive,
-                            "discipline": r.discipline, 'simple_doc': r.doc_for_simple}
+                            "discipline": r.discipline, 'simple_doc': r.doc_for_simple,
+                            "organization_type": r.organization_type, "official_email": r.official_email}
 
                     educations = Education.objects.filter(request=r)
                     if educations:

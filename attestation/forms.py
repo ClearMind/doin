@@ -26,6 +26,8 @@ class RequestForm(forms.Form):
     organization_name = forms.CharField(max_length=512, label=_('Organization name'), required=False,
                                         widget=forms.Textarea(attrs={'rows': 5, 'cols': 80}))
 
+    organization_type = forms.ChoiceField(choices=OTYPES, label=u'Направление деятельности', required=True)
+
     with_qualification = forms.ModelChoiceField(queryset=Qualification.objects.exclude(for_confirmation=True),
                                                 label=_('With qualification'), required=False, empty_label='не имею')
     expiration_date = forms.DateField(label=_('Expiration date'), required=False)

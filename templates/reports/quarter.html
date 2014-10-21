@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block content %}
+    <h1>Отчет по заявлениям на первую категорию за период</h1>
+    {% if not flows %}
+    <div class="message">Заявлений со статусом "Результаты экспертной оценки" за данный период нет.</div>
+    {% endif %}
+    <div class="form">
+        <form action="." method="POST">
+            {% csrf_token %}
+            <table>
+                {% if form.non_field_errors %}
+                    <tr style="border-top: 1px solid gray;">
+                        <td colspan="2" class="errors">
+                            {{ form.non_field_error }}
+                        </td>
+                    </tr>
+                {% endif %}
+                <tr class="caption">
+                    <td colspan="2">Укажите квартал</td>
+                </tr>
+                {% if form.quarter.errors %}
+                    <tr>
+                        <td colspan="3" class="error">{{ form.quarter.errors }}</td>
+                    </tr>
+                {% endif %}
+                <tr>
+                    <td class="label">{{ form.quarter.label_tag }}</td>
+                    <td {% if form.quarter.field.required %}class="required"{% endif %}>{{ form.quarter }}</td>
+                </tr>
+                {% if form.year.errors %}
+                    <tr>
+                        <td colspan="3" class="error">{{ form.year.errors }}</td>
+                    </tr>
+                {% endif %}
+                <tr>
+                    <td class="label">{{ form.year.label_tag }}</td>
+                    <td {% if form.year.field.required %}class="required"{% endif %}>{{ form.year }}</td>
+                </tr>
+                <tr class="caption">
+                    <td colspan="2">
+                        <input type="submit" value="Создать отчет"/>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+    {% if file_name %}
+        <iframe src="{{ file_name }}" frameborder="0"></iframe>
+    {% endif %} 
+{% endblock %}
