@@ -485,6 +485,18 @@
         </td>
     </tr>
 
+    {% if form.identity.errors %}
+        <tr>
+            <td colspan="3" class="error">{{ form.identity.errors }}</td>
+        </tr>
+    {% endif %}
+    <tr>
+        <td class="label">{{ form.identity.label_tag }}</td>
+        <td {% if form.identity.field.required %}class="required"{% endif %}>{{ form.identity }}</td>
+        <td class="help">В соответствии с Федеральным законом от 27.07.2006 № 152-ФЗ «О персональных данных» необходимо
+            согласие на обработку персональных данных</td>
+    </tr>
+
     <tr class="caption">
         <td colspan="3">
             <input type="submit" value="{% trans "Save" %}"/>

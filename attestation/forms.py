@@ -70,8 +70,12 @@ class RequestForm(forms.Form):
     simple_doc = forms.CharField(widget=forms.Textarea(attrs={"rows": 4, "cols": 80, 'maxlength': 256}),
                                  label=u'Документ', required=False)
 
+    identity = forms.BooleanField(required=True, label=u'Даю согласие на обработку моих персональных данных')
+
     def clean(self):
         cleaned_data = self.cleaned_data
+        if not cleaned_data.get('identity'):
+            raise forms.ValidationError(u'Необходимо подтвердить согласие на обработку персональных данных!')
         if cleaned_data.get('with_qualification') and not cleaned_data.get('expiration_date'):
             self._errors['expiration_date'] = ugettext('Field required.')
             raise forms.ValidationError(_('You must define expiration date if you have qualification'))
