@@ -348,9 +348,25 @@ def set_current_status(request_, rid):
             except ObjectDoesNotExist:
                 pass
 
-        if data.get('documents', None):
+        if data.get('documents', None) and req.doc_date is None:
             req.doc_date = datetime.date.today()
             req.save()
+
+            msg = EmailMultiAlternatives(
+                u'Документы по Вашему заявлению получены'.encode('utf-8'),
+                u"""
+В системе аттестации педагогических работников ХМАО-Югры зарегистрирован факт получения
+оригиналов документов по Вашему заявлению (№ %s).
+                """.encode('utf-8') % req.pk,
+                'att@iro86.ru', [req.email]
+            )
+            msg.attach_alternative(
+                u"""
+<html><p>В системе аттестации педагогических работников ХМАО-Югры зарегистрирован факт получения
+оригиналов документов по Вашему заявлению (№ %s).</p></html>
+                """.encode('utf-8'), 'text/html'
+            )
+            msg.send(fail_silently=not DEBUG)
 
     return HttpResponseRedirect(reverse('attestation.views.request_details', args=[rid]))
 
