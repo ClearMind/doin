@@ -431,10 +431,10 @@ def quarter(request):
     form = QuarterForm(initial={"quarter": 'I', "year": datetime.date.today().year})
 
     borders = {
-        'I': (datetime.datetime(2014, 1, 1, 0), datetime.datetime(2014, 3, 31, 0)),
-        'II': (datetime.datetime(2014, 4, 1, 0), datetime.datetime(2014, 6, 30, 0)),
-        'III': (datetime.datetime(2014, 7, 1, 0), datetime.datetime(2014, 9, 30, 0)),
-        'IV': (datetime.datetime(2014, 10, 1, 0), datetime.datetime(2014, 12, 31, 0))
+        'I': (datetime.datetime(2014, 1, 15, 0), datetime.datetime(2014, 4, 14, 0)),
+        'II': (datetime.datetime(2014, 4, 15, 0), datetime.datetime(2014, 7, 14, 0)),
+        'III': (datetime.datetime(2014, 7, 15, 0), datetime.datetime(2014, 10, 14, 0)),
+        'IV': (datetime.datetime(2014, 10, 15, 0), datetime.datetime(2014, 12, 31, 0))
     }
 
     if request.method == 'POST':

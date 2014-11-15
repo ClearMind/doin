@@ -499,7 +499,7 @@ def assign_experts(request_, rid):
             assigned_experts_count = ExpertInRequest.objects.filter(request=r).count()
 
             i = 0
-            while assigned_experts_count < 1:
+            while assigned_experts_count < 1 and experts_list:
                 expert_ = experts_list[i]
                 if expert_.cnt <= 30:
                     expert_in_request, created = ExpertInRequest.objects.get_or_create(

@@ -96,7 +96,7 @@ $.datepicker.setDefaults({
     isRTL: false,
     showMonthAfterYear: false,
     yearSuffix: '',
-    yearRange: '-70'});
+    yearRange: '-70:+5'});
 
 $('#id_expiration_date').datepicker();
 $('#id_birth_date').datepicker();
