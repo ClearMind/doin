@@ -77,6 +77,7 @@ def categories(request):
                 terr_name = r.territory.name
             else:
                 terr_name = r.organization.territory.name
+            r.request_date = r.requestflow_set.order_by('date').values_list('date', flat=True)[0]
             c.requests.setdefault(terr_name, []).append(r)
 
         for k in c.requests.keys():
@@ -431,7 +432,7 @@ def quarter(request):
     form = QuarterForm(initial={"quarter": 'I', "year": datetime.date.today().year})
 
     borders = {
-        'I': (datetime.datetime(2014, 1, 15, 0), datetime.datetime(2014, 4, 14, 0)),
+        'I': (datetime.datetime(2014, 1, 1, 0), datetime.datetime(2014, 4, 14, 0)),
         'II': (datetime.datetime(2014, 4, 15, 0), datetime.datetime(2014, 7, 14, 0)),
         'III': (datetime.datetime(2014, 7, 15, 0), datetime.datetime(2014, 10, 14, 0)),
         'IV': (datetime.datetime(2014, 10, 15, 0), datetime.datetime(2014, 12, 31, 0))
@@ -448,50 +449,64 @@ def quarter(request):
 
             from_date, to_date = borders[form.cleaned_data['quarter']]
 
-            flows = RequestFlow.objects.select_related('request', 'request__qualification').filter(
-                date__gte=from_date,
-                date__lte=to_date,
-                request__qualification__for_confirmation=False,
-            ).filter(
-                (Q(request__status__is_done=True) | Q(request__status__is_fail=True)) &
-                (Q(status__is_done=True) | Q(status__is_fail=True))
-            ).order_by('request__order_number')
+            requests = Request.objects.filter(
+                order_date__gte=from_date,
+                order_date__lte=to_date,
+                organization_type__isnull=False
+            ).order_by('order_number', 'order_date')
 
-            by_order = {k: list(v) for k, v in groupby(
-                flows, key=lambda f_: (f_.request.order_number, f_.request.order_date)
-            )}
+            type_filters = {
+                7: lambda _: _,
+                19: lambda r: r.organization_type == 'common',
+                55: lambda r: r.organization_type == 'professional',
+                31: lambda r: r.organization_type == 'preschool',
+                43: lambda r: r.organization_type == 'additional',
+                103: lambda r: r.organization_type == 'social',
+                91: lambda r: r.organization_type == 'cultural',
+                67: lambda r: r.organization_type == 'correction',
+                79: lambda r: r.organization_type == 'sport'
+            }
 
             spreadsheet = ODTFile(os.path.join(settings.MEDIA_ROOT, 'odt', 'quarter.ods'))
             sheet = spreadsheet.document.getSheets().getByIndex(0)
 
             # sub sub titles
             for r in range(5, 103, 12):
+                start = (0, r+2)
+                array = ()
+
                 sheet.getCellByPosition(0, r).setString(u'Отчет за %s квартал %s года' % (
                     form.cleaned_data['quarter'],
                     form.cleaned_data['year']
                 ))
 
-            # сводный
-            start = (0, 7)
-            array = ()
-            for order, flws in by_order.items():
-                if not all(order):
-                    continue
-                array += (
-                    (
-                        u'Приказ Департамента от %s № %s' % (order[1].strftime('%d.%m.%Y'), order[0]),
-                        len([1 for f in flws if f.status.is_done and f.request.qualification.first]),
-                        len([1 for f in flws if f.status.is_done and f.request.qualification.best]),
-                        len([1 for f in flws if f.status.is_fail and f.request.qualification.first]),
-                        len([1 for f in flws if f.status.is_fail and f.request.qualification.best]),
-                        len([1 for f in flws if f.status.is_done])
-                    ),
-                )
+                requests_ = filter(type_filters[start[1]], requests)
 
-            range_ = sheet.getCellRangeByPosition(
-                start[0], start[1], start[0] + len(array[0]) - 1, start[1] + len(array) - 1
-            )
-            range_.setDataArray(array)
+                if not requests_:
+                    continue
+
+                by_order = {k: list(v) for k, v in groupby(
+                    requests_, key=lambda f_: (f_.order_number, f_.order_date)
+                )}
+
+                for order, reqs in sorted(by_order.items(), key=lambda o: o[0]):
+                    if not all(order):
+                        continue
+                    array += (
+                        (
+                            u'Приказ Департамента от %s № %s' % (order[1].strftime('%d.%m.%Y'), order[0]),
+                            len([1 for r in reqs if r.status.is_done and r.qualification.first]),
+                            len([1 for r in reqs if r.status.is_done and r.qualification.best]),
+                            len([1 for r in reqs if r.status.is_fail and r.qualification.first]),
+                            len([1 for r in reqs if r.status.is_fail and r.qualification.best]),
+                            len([1 for r in reqs if r.status.is_done])
+                        ),
+                    )
+
+                range_ = sheet.getCellRangeByPosition(
+                    start[0], start[1], start[0] + len(array[0]) - 1, start[1] + len(array) - 1
+                )
+                range_.setDataArray(array)
 
             file_name = os.path.join(
                 settings.MEDIA_URL,
