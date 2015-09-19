@@ -160,66 +160,33 @@ def by_experts(request):
 
             statuses = RequestStatus.objects.filter(is_expertise_results_received=True)
             flows = set(
-                f.request_id for f in
                 RequestFlow.objects.filter(status__in=statuses).filter(
                     date__lte=td + datetime.timedelta(days=1),
                     date__gte=fd
-                )
+                ).values_list('request_id', flat=True)
             )
 
             experts = {}
             data_array = ()
-            start_position = (0, 3)  # A4
+            start_position = (0, 1)  # A4
             number = 1
-            counts = defaultdict(lambda: defaultdict(int))
 
-            for eir in ExpertInRequest.objects.select_related(
-                'expert', 'request', 'request__qualification'
-            ).order_by('expert__last_name', 'request__last_name'):
-                expert_ = eir.expert
+            for eir in ExpertInRequest.objects.select_related('expert', 'request'):
                 if eir.request_id in flows:
-                    request_ = eir.request
-                    if request_.doc_for_simple:
-                        counts[expert_]['simple'] += 1
-                    if eir.first_grade and eir.second_grade:
-                        request_.count_ = 3
-                        if request_.qualification.best:
-                            counts[expert_]['first_best_count_'] += 1
-                            counts[expert_]['second_best_count_'] += 1
-                        if request_.qualification.first:
-                            counts[expert_]['first_first_count_'] += 1
-                            counts[expert_]['second_first_count_'] += 1
-                    elif eir.first_grade:
-                        request_.count_ = 1
-                        if request_.qualification.best:
-                            counts[expert_]['first_best_count_'] += 1
-                        if request_.qualification.first:
-                            counts[expert_]['first_first_count_'] += 1
-                    elif eir.second_grade:
-                        request_.count_ = 2
-                        if request_.qualification.best:
-                            counts[expert_]['second_best_count_'] += 1
-                        if request_.qualification.first:
-                            counts[expert_]['second_first_count_'] += 1
-                    else:
-                        request_.count_ = None
-                    experts.setdefault(eir.expert, []).append(request_)
+                    experts.setdefault(eir.expert, []).append(eir.request)
 
-            for expert, requests in sorted(experts.items(), key=lambda (e, r): e.__unicode__()):
+            for expert, requests in sorted(experts.items(), key=lambda (e, _): e.__unicode__()):
+                common = sorted([r.fio() for r in requests if not r.doc_for_simple])
+                simple = sorted([r.fio() for r in requests if r.doc_for_simple])
                 data_array += (
                     (
-                        number,
-                        expert.__unicode__(),
-                        ';\n'.join((r.fio() for r in requests if r.qualification.best and r.count_ and r.count_ % 2)),
-                        ';\n'.join((r.fio() for r in requests if r.qualification.best and r.count_ and r.count_ >= 2)),
-                        ';\n'.join((r.fio() for r in requests if r.qualification.first and r.count_ and r.count_ % 2)),
-                        ';\n'.join((r.fio() for r in requests if r.qualification.first and r.count_ and r.count_ >= 2)),
-                        ';\n'.join((r.fio() for r in requests if r.doc_for_simple)),
-                        counts[expert]['first_best_count_'],
-                        counts[expert]['second_best_count_'],
-                        counts[expert]['first_first_count_'],
-                        counts[expert]['second_first_count_'],
-                        counts[expert]['simple']
+                        number,  # num
+                        expert.__unicode__(),  # expert
+                        ';\n'.join(common),  # req_common
+                        ';\n'.join(simple),  # req_simple
+                        len(common),  # count_common
+                        len(simple),  # count_simple
+                        len(common) + len(simple)  # count_overall
                     ),
                 )
                 number += 1
