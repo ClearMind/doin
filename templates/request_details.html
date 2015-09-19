@@ -77,7 +77,10 @@
                 <tr>
                     <td><label for="documents">Все документы предоставлены</label></td>
                     <td>
-                        <input type="checkbox" id="documents" name="documents"/>
+                        <select name="documents" id="documents">
+                            <option value="no">Нет</option>
+                            <option value="yes" {% if req.doc_date %}selected="selected"{% endif %} >Да</option>
+                        </select>
                         {% if req.doc_date %}
                             <span>(текущая дата получения документов {{ req.doc_date|date:"d.m.Y" }})</span>
                         {% endif %}

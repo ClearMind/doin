@@ -348,7 +348,7 @@ def set_current_status(request_, rid):
             except ObjectDoesNotExist:
                 pass
 
-        if data.get('documents', None) and req.doc_date is None:
+        if data.get('documents', None) == 'yes' and req.doc_date is None:
             req.doc_date = datetime.date.today()
             req.save()
 
@@ -367,6 +367,10 @@ def set_current_status(request_, rid):
                 """.encode('utf-8'), 'text/html'
             )
             msg.send(fail_silently=not DEBUG)
+
+        if data.get('documents', None) == 'no' and req.doc_date is not None:
+            req.doc_date = None
+            req.save()
 
     return HttpResponseRedirect(reverse('attestation.views.request_details', args=[rid]))
 
