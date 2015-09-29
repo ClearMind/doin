@@ -134,8 +134,10 @@ def reports_list(request):
         (_('By requested categories'), reverse(categories)),
         (_('By statuses'), reverse(status_counter)),
         (_('By experts'), reverse(by_experts)),
-        (u'Заявления на первую категорию', reverse(first_category)),
-        (u'Заявления на высшую категорию', reverse(best_category)),
+        (u'Заявления на первую категорию', reverse(first_category, args=['all'])),
+        (u'Заявления на первую категорию по УП', reverse(first_category, args=('simple', ))),
+        (u'Заявления на высшую категорию', reverse(best_category, args=['all'])),
+        (u'Заявления на высшую категорию по УП', reverse(best_category, args=('simple', ))),
         (u'Квартальный отчет', reverse(quarter)),
     ]
 
@@ -215,7 +217,7 @@ def by_experts(request):
 
 
 @login_required
-def first_category(request):
+def first_category(request, kind):
     title = u'Отчет по заявлениям на первую категорию'
     form = DatePeriodForm(initial={"fromdate": datetime.date.today(), "todate": datetime.date.today()})
     custom_styles = ['smoothness/jquery-ui-1.8.23.custom.css']
@@ -237,6 +239,11 @@ def first_category(request):
                 date__gte=fd
             )
             flows = filter(lambda f_: f_.request.status.is_expertise_results_received, flows)
+            if kind == 'simple':
+                flows = filter(
+                    lambda f_: f_.request.doc_for_simple is not None and len(f_.request.doc_for_simple) > 10,
+                    flows
+                )
 
             by_territory = {}
             for f in flows:
@@ -250,18 +257,24 @@ def first_category(request):
                 expertises.setdefault(e.request_id, []).append(e)
 
             if flows:
-                spreadsheet = ODTFile(os.path.join(settings.MEDIA_ROOT, 'odt', 'first_category.ods'))
+                spreadsheet = ODTFile(
+                    os.path.join(
+                        settings.MEDIA_ROOT,
+                        'odt',
+                        'first_category%s.ods' % ('' if kind == 'all' else '_simple')
+                    )
+                )
                 sheet = spreadsheet.document.getSheets().getByIndex(0)
                 row = 3
                 count = 1
                 for territory in by_territory.keys():
-                    sheet.getCellRangeByPosition(0, row, 7, row).merge(1)
+                    sheet.getCellRangeByPosition(0, row, 6, row).merge(1)
                     sheet.getCellByPosition(0, row).setString(territory)
                     row += 1
                     local_flows = by_territory[territory]
                     local_flows = sorted(local_flows, key=lambda fl: (fl.request.post.name, fl.request.last_name))
                     for flow in local_flows:
-                        range_ = sheet.getCellRangeByPosition(0, row, 6, row)
+                        range_ = sheet.getCellRangeByPosition(0, row, 5, row)
                         r = flow.request
                         row += 1
                         if expertises.get(r.id, None):
@@ -274,12 +287,11 @@ def first_category(request):
                             (  # row
                                 (  # columns in row
                                     count,
-                                    r.post.name,
                                     r.fio(),
+                                    r.post.name,
                                     r.organization_name or r.organization.name,
                                     fg,
-                                    sg,
-                                    fg + sg
+                                    sg if kind == 'all' else r.doc_for_simple
                                 ),
                             )
                         )
@@ -305,7 +317,7 @@ def first_category(request):
 
 
 @login_required
-def best_category(request):
+def best_category(request, kind):
     title = u'Отчет по заявлениям на высшую категорию'
     form = DatePeriodForm(initial={"fromdate": datetime.date.today(), "todate": datetime.date.today()})
     custom_styles = ['smoothness/jquery-ui-1.8.23.custom.css']
@@ -327,6 +339,10 @@ def best_category(request):
                 date__gte=fd
             )
             flows = filter(lambda f_: f_.request.status.is_expertise_results_received, flows)
+            flows = filter(
+                lambda f_: f_.request.doc_for_simple is not None and len(f_.request.doc_for_simple) > 10,
+                flows
+            )
 
             by_territory = {}
             for f in flows:
@@ -340,18 +356,24 @@ def best_category(request):
                 expertises.setdefault(e.request_id, []).append(e)
 
             if flows:
-                spreadsheet = ODTFile(os.path.join(settings.MEDIA_ROOT, 'odt', 'best_category.ods'))
+                spreadsheet = ODTFile(
+                    os.path.join(
+                        settings.MEDIA_ROOT,
+                        'odt',
+                        'best_category%s.ods' % ('' if kind == 'all' else '_simple')
+                    )
+                )
                 sheet = spreadsheet.document.getSheets().getByIndex(0)
                 row = 3
                 count = 1
                 for territory in by_territory.keys():
-                    sheet.getCellRangeByPosition(0, row, 7, row).merge(1)
+                    sheet.getCellRangeByPosition(0, row, 6, row).merge(1)
                     sheet.getCellByPosition(0, row).setString(territory)
                     row += 1
                     local_flows = by_territory[territory]
                     local_flows = sorted(local_flows, key=lambda fl: (fl.request.post.name, fl.request.last_name))
                     for flow in local_flows:
-                        range_ = sheet.getCellRangeByPosition(0, row, 6, row)
+                        range_ = sheet.getCellRangeByPosition(0, row, 5, row)
                         r = flow.request
                         row += 1
                         if expertises.get(r.id, None):
@@ -364,12 +386,11 @@ def best_category(request):
                             (  # row
                                 (  # columns in row
                                     count,
-                                    r.post.name,
                                     r.fio(),
+                                    r.post.name,
                                     r.organization_name or r.organization.name,
                                     fg,
-                                    sg,
-                                    fg + sg
+                                    sg if kind == 'all' else r.doc_for_simple
                                 ),
                             )
                         )
