@@ -445,21 +445,21 @@ def quarter(request):
 
             type_filters = {
                 7: lambda _: _,
-                19: lambda r: r.organization_type == 'common',
-                55: lambda r: r.organization_type == 'professional',
-                31: lambda r: r.organization_type == 'preschool',
-                43: lambda r: r.organization_type == 'additional',
-                103: lambda r: r.organization_type == 'social',
-                91: lambda r: r.organization_type == 'cultural',
-                67: lambda r: r.organization_type == 'correction',
-                79: lambda r: r.organization_type == 'sport'
+                20: lambda r: r.organization_type == 'common',
+                59: lambda r: r.organization_type == 'professional',
+                33: lambda r: r.organization_type == 'preschool',
+                46: lambda r: r.organization_type == 'additional',
+                111: lambda r: r.organization_type == 'social',
+                98: lambda r: r.organization_type == 'cultural',
+                72: lambda r: r.organization_type == 'correction',
+                85: lambda r: r.organization_type == 'sport'
             }
 
             spreadsheet = ODTFile(os.path.join(settings.MEDIA_ROOT, 'odt', 'quarter.ods'))
             sheet = spreadsheet.document.getSheets().getByIndex(0)
 
             # sub sub titles
-            for r in range(5, 103, 12):
+            for r in range(5, 110, 13):
                 start = (0, r+2)
                 array = ()
 
@@ -482,7 +482,8 @@ def quarter(request):
                         continue
                     array += (
                         (
-                            u'Приказ Департамента от %s № %s' % (order[1].strftime('%d.%m.%Y'), order[0]),
+                            u'Приказ Департамента № %s' % order[0],
+                            order[1].strftime('%d.%m.%Y'),
                             len([1 for r in reqs if r.status.is_done and r.qualification.first]),
                             len([1 for r in reqs if r.status.is_done and r.qualification.best]),
                             len([1 for r in reqs if r.status.is_fail and r.qualification.first]),
