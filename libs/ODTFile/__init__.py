@@ -63,13 +63,13 @@ class ODTFile():
 
     def fill_template(self, data):
         for find, replace in data.items():
-            if len(replace) > 65500:
-                start = replace[0:65500] + "$pekfjgyt"
-                end = replace[65500:]
-                self.replace("$%s" % find, start)
-                self.replace("$pekfjgyt", end)
-            else:
-                self.replace("$%s" % find, replace)
+            while replace:
+                head = replace[:65000]
+                replace = replace[65000:]
+                if replace:
+                    head += "$next_chunk"
+                self.replace("$%s" % find, head)
+                find = "next_chunk"
 
     def fill_spreadsheet(self, start_cell_position, data_array):
         sheet = self.document.getSheets().getByIndex(0)
