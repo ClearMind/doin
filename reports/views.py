@@ -89,6 +89,128 @@ def categories(request):
 
 
 @login_required
+def territory_counter(request):
+    title = _('Report by statuses in date range')
+    custom_styles = ['smoothness/jquery-ui-1.8.23.custom.css', 'jquery.dataTables.css']
+    custom_scripts = ['libs/jquery.dataTables.min.js']
+
+    statuses = RequestStatus.objects.all()
+    form = DatePeriodForm(initial={"fromdate": datetime.date.today(), "todate": datetime.date.today()})
+
+    if request.method == "POST":
+        form = DatePeriodForm(request.POST)
+        if form.is_valid():
+            todate = form.cleaned_data['todate']
+            fromdate = form.cleaned_data['fromdate']
+
+            months_range = list(range(fromdate.month, todate.month+1))
+
+            months = (
+                u'Январь',
+                u'Февраль',
+                u'Март',
+                u'Фпрель',
+                u'Май',
+                u'Июнь',
+                u'Июль',
+                u'Август',
+                u'Сентябрь',
+                u'Октябрь',
+                u'Ноябрь',
+                u'Декабрь',
+            )
+
+            spreadsheet = ODTFile(os.path.join(settings.MEDIA_ROOT, 'odt', 'territory.ods'))
+            sheet = spreadsheet.document.getSheets().getByIndex(0)
+
+            statuses = RequestStatus.objects.filter(is_done=True)
+            flows = RequestFlow.objects.select_related(
+                'request', 'request__territory', 'request__organization', 'request__organization__territory',
+                'request__qualification'
+            ).filter(
+                status__in=statuses,
+                date__lte=todate,
+                date__gte=fromdate
+            )
+
+            by_territory = {}
+            for f in flows:
+                if f.request.territory:
+                    by_territory.setdefault(f.request.territory.name, []).append(f)
+                elif f.request.organization.territory:
+                    by_territory.setdefault(f.request.organization.territory.name, []).append(f)
+
+            for qual_name, row, qualification in (
+                    (u'высшую', 0, 'best'),
+                    (u'первую', len(by_territory.keys()) + 7, 'first')
+            ):
+                data_array = ()
+                sum_by_month = dict((m, 0) for m in months_range)
+
+                sheet.getCellRangeByPosition(0, row, len(months_range) + 1, row).merge(1)
+                sheet.getCellByPosition(0, row).setString(
+                    u'Количество аттестуемых на %s квалификационную категорию по территориям' % qual_name
+                )
+
+                sheet.getCellRangeByPosition(0, row+1, len(months_range) + 1, row+1).merge(1)
+                sheet.getCellByPosition(0, row+1).setString(
+                    u'c %s по %s' % (
+                        u'%s/%s г.' % (fromdate.month, fromdate.year),
+                        u'%s/%s г.' % (todate.month, todate.year),
+                    )
+                )
+
+                range_ = sheet.getCellRangeByPosition(0, row+2, len(months_range) + 1, row+2)
+                range_.setDataArray(
+                    (  # row
+                       (u'Территория',) + tuple(months[m-1] for m in months_range) + (u'ИТОГО',),
+                    )
+                )
+
+                start_position = (0, row+3)
+                for terr, flows in by_territory.items():
+                    row_data = (terr, )
+                    s = 0  # row sum
+                    for m in months_range:
+                        c = len(
+                            filter(
+                                lambda fl: fl.date.month == m and getattr(fl.request.qualification, qualification, False),
+                                flows
+                            )
+                        )  # count
+                        s += c
+                        sum_by_month[m] += c
+                        row_data += (c, )
+                    row_data += (s, )
+
+                    data_array += (
+                        row_data,
+                    )
+                data_array += (('', ) + tuple(sum_by_month[m] for m in months_range) + (sum(sum_by_month.values()), ),)
+
+                if data_array:
+                    spreadsheet.fill_spreadsheet(start_position, data_array)
+
+            file_name = os.path.join(
+                settings.MEDIA_URL,
+                'generated',
+                'experts_%s_%s.xls' % (fromdate.strftime('%Y%m%d'), todate.strftime('%Y%m%d'))
+            )
+            spreadsheet.save(
+                os.path.join(
+                    settings.MEDIA_ROOT,
+                    'generated',
+                    'experts_%s_%s.xls' % (fromdate.strftime('%Y%m%d'), todate.strftime('%Y%m%d'))
+                ),
+                file_format='MS Excel 97'
+            )
+
+    template = loader.get_template("reports/territory_counter.html")
+    c = RequestContext(request, locals())
+    return HttpResponse(template.render(c))
+
+
+@login_required
 def status_counter(request):
     title = _('Report by statuses in date range')
     custom_styles = ['smoothness/jquery-ui-1.8.23.custom.css', 'jquery.dataTables.css']
@@ -138,6 +260,7 @@ def reports_list(request):
         (u'Заявления на первую категорию по УП', reverse(first_category, args=('simple', ))),
         (u'Заявления на высшую категорию', reverse(best_category, args=['all'])),
         (u'Заявления на высшую категорию по УП', reverse(best_category, args=('simple', ))),
+        (u'Кол-во аттестованых по территориям', reverse(territory_counter)),
         (u'Квартальный отчет', reverse(quarter)),
     ]
 
@@ -264,7 +387,7 @@ def first_category(request, kind):
                         'first_category%s.ods' % ('' if kind == 'all' else '_simple')
                     )
                 )
-                sheet = spreadsheet.document.getSheets().getByIndex(0)
+                sheet = spreadsheet.document.getSheets().getByIndex(0)  #
                 row = 3
                 count = 1
                 for territory in by_territory.keys():

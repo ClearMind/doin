@@ -4,6 +4,7 @@ from django.conf.urls.defaults import patterns, url
 urlpatterns = patterns(
     'reports.views',
     url(r'^requests/by/territories/$', 'territories'),
+    url(r'^requests/by/territories_and_dates/$', 'territory_counter'),
     url(r'^requests/by/categories/$', 'categories'),
     url(r'^count/by/statuses/$', "status_counter"),
     url(r'^by/experts/$', "by_experts"),

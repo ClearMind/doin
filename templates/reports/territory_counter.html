@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block content %}
+    <h1>Отчет по количеству аттестованых по территориям</h1>
+    <div class="form">
+        <form action="." method="POST">
+            {% csrf_token %}
+            <table>
+                {% if form.non_field_errors %}
+                    <tr style="border-top: 1px solid gray;">
+                        <td colspan="2" class="errors">
+                            {{ form.non_field_error }}
+                        </td>
+                    </tr>
+                {% endif %}
+                <tr class="caption">
+                    <td colspan="2">Укажите период</td>
+                </tr>
+                {% if form.fromdate.errors %}
+                    <tr>
+                        <td colspan="3" class="error">{{ form.fromdate.errors }}</td>
+                    </tr>
+                {% endif %}
+                <tr>
+                    <td class="label">{{ form.fromdate.label_tag }}</td>
+                    <td {% if form.fromdate.field.required %}class="required"{% endif %}>{{ form.fromdate }}</td>
+                </tr>
+                {% if form.todate.errors %}
+                    <tr>
+                        <td colspan="3" class="error">{{ form.todate.errors }}</td>
+                    </tr>
+                {% endif %}
+                <tr>
+                    <td class="label">{{ form.todate.label_tag }}</td>
+                    <td {% if form.todate.field.required %}class="required"{% endif %}>{{ form.todate }}</td>
+                </tr>
+                <tr class="caption">
+                    <td colspan="2">
+                        <input type="submit" value="Создать отчет"/>
+                    </td>
+                </tr>
+            </table>
+        </form>
+        <iframe src="{{ file_name }}" frameborder="0"></iframe>
+    </div>
+{% endblock %}
